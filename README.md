@@ -24,7 +24,7 @@ You do need to prepare an encrypted data bag, containing the certificates,
 private keys, and CA bundles you wish to deploy to servers with the LWRP.
 I used Joshua Timberman's [blog post](https://jtimberman.posterous.com/64227128),
 and the Opscode [Wiki documentation](http://wiki.opscode.com/display/chef/Encrypted+Data+Bags)
-on as a reference in creating this cookbook.
+as a reference in creating this cookbook.
 
 First, create a **data bag secret** as follows.  You need to manually copy
 the *encrypted_data_bag_secret* to */etc/chef* on your servers, or place it
@@ -93,8 +93,8 @@ trusted by the server.
 
     {
       "id": "wildcard",
-      "cert": "-----BEGIN CERTIFICATE-----\nMail Certificate Here...",
-      "key": "-----BEGIN PRIVATE KEY\nMail Private Key Here...",
+      "cert": "-----BEGIN CERTIFICATE-----\nWildcard Certificate Here...",
+      "key": "-----BEGIN PRIVATE KEY\nWildcard Private Key Here...",
       "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
     }
 

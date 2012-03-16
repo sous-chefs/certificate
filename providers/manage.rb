@@ -61,7 +61,7 @@ action :create do
   end
 
   if ssl_item['chain']
-    template "#{new_resoruce.cert_path}/certs/#{new_resource.chain_file}" do
+    template "#{new_resource.cert_path}/certs/#{new_resource.chain_file}" do
       source "blank.erb"
       cookbook new_resource.cookbook
       mode "0644"

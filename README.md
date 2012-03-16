@@ -9,6 +9,9 @@ cookbooks.
 Changes
 =======
 
+* v 0.0.3
+  - Fix typos in LWRP and documentation
+
 * v 0.0.2
   - LWRP conversion of recipe
 
@@ -130,30 +133,20 @@ resources
 
 The LWRP resource attributes are as follows.
 
-  * data_bag
-    - Data bag index to search, defaults to certificates
-  * search_id
-    - Data bag id to search for, defaults to provider name
-  * cert_path
-    - Top-level SSL directory, defaults to vendor specific location
-  * cert_file
-    - The basename of the x509 certificate, defaults to {node.fqdn}.pem
-  * key_file
-    - The basename of the private key file, defaults to {node.fqdn}.key
-  * chain_file
-    - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
-  * owner
-    - The file owner, defaults to root
-  * group
-    - The file group owner, defaults to root
-  * cookbook
-    - The cookbook containing the erb template, defaults to certificate
+  * data_bag - Data bag index to search, defaults to certificates
+  * search_id - Data bag id to search for, defaults to provider name
+  * cert_path - Top-level SSL directory, defaults to vendor specific location
+  * cert_file - The basename of the x509 certificate, defaults to {node.fqdn}.pem
+  * key_file - The basename of the private key file, defaults to {node.fqdn}.key
+  * chain_file - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
+  * owner - The file owner, defaults to root
+  * group - The file group owner, defaults to root
+  * cookbook - The cookbook containing the erb template, defaults to certificate
 
 providers
 ---------
 
-  * certificate_manage
-    - The reusable LWRP to manage certificates, keys, and CA bundles
+  * certificate_manage - The reusable LWRP to manage certificates, keys, and CA bundles
 
 Usage
 -----

@@ -9,8 +9,11 @@ cookbooks.
 Changes
 =======
 
+* v 0.0.4
+  - Fix default action
+
 * v 0.0.3
-  - Fix typos in LWRP and documentation
+  - Minor typo fixes
 
 * v 0.0.2
   - LWRP conversion of recipe

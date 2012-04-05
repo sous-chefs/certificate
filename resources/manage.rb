@@ -17,6 +17,11 @@
 # limitations under the License.
 #
 
+def initialize(*args)
+  super
+  @action = :create
+end
+
 actions :create
 
 # :data_bag is the Data Bag to search.

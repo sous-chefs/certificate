@@ -17,13 +17,7 @@
 # limitations under the License.
 #
 
-def initialize(*args)
-  super
-  @action = :create
-end
-
 action :create do
-
   directory "#{new_resource.cert_path}/certs" do
     owner new_resource.owner
     group new_resource.group
@@ -70,5 +64,4 @@ action :create do
       variables(:file_content => ssl_item['chain'])
     end
   end
-
 end

@@ -25,6 +25,7 @@ action :create do
     recursive true
     not_if "test -d #{new_resource.cert_path}/certs"
   end
+  new_resource.updated_by_last_action(true)
 
   directory "#{new_resource.cert_path}/private" do
     owner new_resource.owner
@@ -33,6 +34,7 @@ action :create do
     recursive true
     not_if "test -d #{new_resource.cert_path}/private"
   end
+  new_resource.updated_by_last_action(true)
 
   ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id)
 
@@ -44,6 +46,7 @@ action :create do
     group new_resource.group
     variables(:file_content => ssl_item['cert'])
   end
+  new_resource.updated_by_last_action(true)
 
   template "#{new_resource.cert_path}/private/#{new_resource.key_file}" do
     source "blank.erb"
@@ -53,8 +56,9 @@ action :create do
     group new_resource.group
     variables(:file_content => ssl_item['key'])
   end
+  new_resource.updated_by_last_action(true)
 
-  if ssl_item['chain']
+  if ssl_item.has_key?('chain')
     template "#{new_resource.cert_path}/certs/#{new_resource.chain_file}" do
       source "blank.erb"
       cookbook new_resource.cookbook
@@ -63,5 +67,6 @@ action :create do
       group new_resource.group
       variables(:file_content => ssl_item['chain'])
     end
+    new_resource.updated_by_last_action(true)
   end
 end

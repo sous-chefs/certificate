@@ -1,3 +1,8 @@
+## v0.0.6
+
+  - Fix incorrect has_key conditional
+  - Disable incorrect foodcritic warning about repetition
+
 ## v0.0.5
 
   - Add foodcritic linting

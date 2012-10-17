@@ -18,14 +18,14 @@
 #
 
 action :create do
-  directory "#{new_resource.cert_path}/certs" do
+  r = directory "#{new_resource.cert_path}/certs" do
     owner new_resource.owner
     group new_resource.group
     mode "0755"
     recursive true
     not_if "test -d #{new_resource.cert_path}/certs"
   end
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 
   directory "#{new_resource.cert_path}/private" do
     owner new_resource.owner
@@ -46,9 +46,9 @@ action :create do
     group new_resource.group
     variables(:file_content => ssl_item['cert'])
   end
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 
-  template "#{new_resource.cert_path}/private/#{new_resource.key_file}" do
+  r = template "#{new_resource.cert_path}/private/#{new_resource.key_file}" do
     source "blank.erb"
     cookbook new_resource.cookbook
     mode "0640"
@@ -57,9 +57,9 @@ action :create do
     variables(:file_content => ssl_item['key'])
     only_if { ssl_item['key'] }
   end
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 
-  template "#{new_resource.cert_path}/certs/#{new_resource.chain_file}" do
+  r = template "#{new_resource.cert_path}/certs/#{new_resource.chain_file}" do
     source "blank.erb"
     cookbook new_resource.cookbook
     mode "0644"
@@ -68,5 +68,5 @@ action :create do
     variables(:file_content => ssl_item['chain'])
     only_if { ssl_item['chain'] }
   end
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 end

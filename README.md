@@ -128,6 +128,10 @@ The LWRP resource attributes are as follows.
 
   * certificate\_manage - The reusable LWRP to manage certificates, keys, and CA bundles
 
+## Attributes
+  node[:certificate][:secret_keyfile] - if set, will specify an alternate filesystem location with the keying material to unlock the encrypted databag (by default, uses the chef default of `/etc/chef/encrypted_data_bag_secret`).
+
+
 ## Usage
 
 Here is a flushed out example using the LWRP to manage your certificate

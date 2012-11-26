@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+def whyrun_supported?
+  true
+end
+
 action :create do
   r = directory "#{new_resource.cert_path}/certs" do
     owner new_resource.owner

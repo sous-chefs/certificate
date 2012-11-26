@@ -1,3 +1,16 @@
+## v0.1.0
+
+Thanks Teemu, and Kris, for their outstanding work!
+
+* Teemu Matilainen
+  - Add whyrun mode support.
+  - Extract directory and file creation to generic methods.
+  - Corrected outstanding issues related to updated_by_last_action
+   
+* Kris Kechagia
+  - Corrected the updated_by_last_action to avoid unneccessary
+    notification.
+
 ## v0.0.6
 
   - Fix incorrect has_key conditional

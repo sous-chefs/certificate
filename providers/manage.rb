@@ -22,55 +22,36 @@ def whyrun_supported?
 end
 
 action :create do
-  r = directory "#{new_resource.cert_path}/certs" do
-    owner new_resource.owner
-    group new_resource.group
-    mode "0755"
-    recursive true
-    not_if "test -d #{new_resource.cert_path}/certs"
-  end
-  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
-
-  directory "#{new_resource.cert_path}/private" do
-    owner new_resource.owner
-    group new_resource.group
-    mode "0750"
-    recursive true
-    not_if "test -d #{new_resource.cert_path}/private"
-  end
-  new_resource.updated_by_last_action(true)
-
   ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id)
 
-  template "#{new_resource.cert_path}/certs/#{new_resource.cert_file}" do
-    source "blank.erb"
-    cookbook new_resource.cookbook 
-    mode "0644"
+  cert_directory_resource "certs"
+  cert_directory_resource "private", :private => true
+
+  cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
+  cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
+  cert_file_resource "private/#{new_resource.key_file}", ssl_item['key'], :private => true
+end
+
+def cert_directory_resource(dir, options = {})
+  r = directory ::File.join(new_resource.cert_path, dir) do
     owner new_resource.owner
     group new_resource.group
-    variables(:file_content => ssl_item['cert'])
+    mode(options[:private] ? 00750 : 00755)
+    recursive true
+    not_if { ::File.exist? ::File.join(new_resource.cert_path, dir) }
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?
+end
 
-  r = template "#{new_resource.cert_path}/private/#{new_resource.key_file}" do
+def cert_file_resource(path, content, options = {})
+  r = template ::File.join(new_resource.cert_path, path) do
     source "blank.erb"
     cookbook new_resource.cookbook
-    mode "0640"
     owner new_resource.owner
     group new_resource.group
-    variables(:file_content => ssl_item['key'])
-    only_if { ssl_item['key'] }
-  end
-  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
-
-  r = template "#{new_resource.cert_path}/certs/#{new_resource.chain_file}" do
-    source "blank.erb"
-    cookbook new_resource.cookbook
-    mode "0644"
-    owner new_resource.owner
-    group new_resource.group
-    variables(:file_content => ssl_item['chain'])
-    only_if { ssl_item['chain'] }
+    mode(options[:private] ? 00640 : 00644)
+    variables :file_content => content
+    only_if { content }
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 end

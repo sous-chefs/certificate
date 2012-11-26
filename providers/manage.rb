@@ -40,7 +40,12 @@ action :create do
   end
   new_resource.updated_by_last_action(true)
 
-  ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id)
+  if node["certificate"]["secret_keyfile"]
+    databag_key = Chef::EncryptedDataBagItem.load_secret(node["certificate"]["secret_keyfile"])
+    ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, databag_key)
+  else
+    ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id)
+  end
 
   template "#{new_resource.cert_path}/certs/#{new_resource.cert_file}" do
     source "blank.erb"

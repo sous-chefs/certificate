@@ -1,3 +1,7 @@
+## v0.0.7
+  - Allow encryption key file to be changed by setting node[:certificate][:secret_keyfile] 
+    attribute
+
 ## v0.0.6
 
   - Fix incorrect has_key conditional

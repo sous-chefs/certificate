@@ -31,18 +31,18 @@ action :create do
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 
-  directory "#{new_resource.cert_path}/private" do
+  r = directory "#{new_resource.cert_path}/private" do
     owner new_resource.owner
     group new_resource.group
     mode "0750"
     recursive true
     not_if "test -d #{new_resource.cert_path}/private"
   end
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 
   ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id)
 
-  template "#{new_resource.cert_path}/certs/#{new_resource.cert_file}" do
+  r = template "#{new_resource.cert_path}/certs/#{new_resource.cert_file}" do
     source "blank.erb"
     cookbook new_resource.cookbook 
     mode "0644"

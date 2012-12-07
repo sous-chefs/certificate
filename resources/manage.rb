@@ -27,6 +27,7 @@ actions :create
 # :data_bag is the Data Bag to search.
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => "certificates"
+attribute :data_bag_keyfile, :kind_of => String, :default => nil
 attribute :search_id, :kind_of => String, :name_attribute => true 
 
 # :cert_file is the filename for the managed certificate.

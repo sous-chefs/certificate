@@ -115,6 +115,7 @@ and wildcard-bundle.crt (CA Root chain)
 The LWRP resource attributes are as follows.
 
   * data\_bag - Data bag index to search, defaults to certificates
+  * data\_bag\_keyfile - Pathname to the file containing the databag encryption key (if ommitted, Chef's default keyfile will be used)
   * search\_id - Data bag id to search for, defaults to provider name
   * cert\_path - Top-level SSL directory, defaults to vendor specific location
   * cert\_file - The basename of the x509 certificate, defaults to {node.fqdn}.pem

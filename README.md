@@ -108,6 +108,22 @@ Same as the default recipe, except for the search *id* is *wildcard*.
 The resulting files will be named wildcard.pem (cert), wildcard.key (key),
 and wildcard-bundle.crt (CA Root chain)
 
+### manage_by_attributes
+
+Retrieve search keys from attributes "certificate".  
+Set ID and LWRP attributes to node attribute following...
+
+    "certificate": [
+      {"self": null},
+      {"mail": {
+        "cert_path": "/etc/postfix/ssl",
+         "owner": "postfix",
+         "group": "postfix"
+        }
+      },
+    ]
+
+
 ## Resources/Providers
 
 ### resources

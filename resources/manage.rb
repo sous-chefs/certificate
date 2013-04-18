@@ -39,6 +39,8 @@ when "redhat","centos","scientific","amazon","fedora"
 attribute :cert_path, :kind_of => String, :default => "/etc/pki/tls"
 when "debian","ubuntu"
 attribute :cert_path, :kind_of => String, :default => "/etc/ssl"
+when "smartos"
+attribute :cert_path, :kind_of => String, :default => "/opt/local/etc/openssl"
 else
 attribute :cert_path, :kind_of => String, :default => "/etc/ssl"
 end

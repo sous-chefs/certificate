@@ -25,9 +25,10 @@ end
 actions :create
 
 # :data_bag is the Data Bag to search.
+# :data_bag_secret is the path to the file with the data bag secret
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => "certificates"
-attribute :data_bag_keyfile, :kind_of => String, :default => nil
+attribute :data_bag_secret, :kind_of => String, :default => "/etc/chef/encrypted_data_bag_secret"
 attribute :search_id, :kind_of => String, :name_attribute => true 
 
 # :cert_file is the filename for the managed certificate.

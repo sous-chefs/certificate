@@ -22,8 +22,8 @@ def whyrun_supported?
 end
 
 action :create do
-  databag_key = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_keyfile)
-  ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, databag_key)
+  ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
+  ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
 
   cert_directory_resource "certs"
   cert_directory_resource "private", :private => true

@@ -1,3 +1,7 @@
+## v0.2.1
+
+* Fixes issue #11, reported by @tmatilia
+
 ## v0.2.0
 
 Cleaning up the backlog of PRs

@@ -140,6 +140,7 @@ The LWRP resource attributes are as follows.
   * owner - The file owner, defaults to root
   * group - The file group owner, defaults to root
   * cookbook - The cookbook containing the erb template, defaults to certificate
+  * create\_subfolders - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
 
 ### providers
 

@@ -1,3 +1,7 @@
+## v0.2.2
+
+* Add :create_subfolders attribute, to toggle off folder creation of private/certs directories.
+
 ## v0.2.1
 
 * Fixes issue #11, reported by @tmatilia

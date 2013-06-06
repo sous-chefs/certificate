@@ -35,6 +35,7 @@ attribute :search_id, :kind_of => String, :name_attribute => true
 # :key_file is the filename for the managed key.
 # :chain_file is the filename for the managed CA chain.
 # :cert_path is the top-level directory for certs/keys (certs and private sub-folders are where the files will be placed)
+# :create_subfolders will automatically create certs and private sub-folders
 case node['platform_family']
 when "rhel"
 attribute :cert_path, :kind_of => String, :default => "/etc/pki/tls"
@@ -48,6 +49,7 @@ end
 attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
 attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
 attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
+attribute :create_subfolders, :kind_of => [ TrueClass, FlaseClass ], :default => true
 
 # The owner and group of the managed certificate and key
 attribute :owner, :kind_of => String, :default => "root"

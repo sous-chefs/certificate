@@ -1,3 +1,7 @@
+## v0.2.3
+
+* Fix typo in "manage" resource definitions
+
 ## v0.2.2
 
 * Add :create_subfolders attribute, to toggle off folder creation of private/certs directories.

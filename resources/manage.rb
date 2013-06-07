@@ -49,7 +49,7 @@ end
 attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
 attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
 attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
-attribute :create_subfolders, :kind_of => [ TrueClass, FlaseClass ], :default => true
+attribute :create_subfolders, :kind_of => [ TrueClass, FalseClass ], :default => true
 
 # The owner and group of the managed certificate and key
 attribute :owner, :kind_of => String, :default => "root"

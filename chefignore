@@ -15,3 +15,7 @@
 
 # travis
 \.travis.yml
+
+# test-kitchen
+\.kitchen.yml
+test/**

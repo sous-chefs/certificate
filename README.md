@@ -7,6 +7,13 @@ from encrypted Data Bags.  This cookbook provides a flexible and re-usable
 LWRP which can be plugged into other recipes, such as the postfix or apache2
 cookbooks.
 
+### Important note
+
+The KITCHEN.md documents the `test/integration` files used to validate
+the certificate\_manage LWRP converges correctly.  Files in the `test/integration`
+should not be used in production.  Files include a self-signed "snake oil" certificate/key
+and an encrypted\_data\_bag\_secret file which are not secure to use beyond testing.
+
 ## Requirements
 
 You do need to prepare an encrypted data bag, containing the certificates,

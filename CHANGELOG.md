@@ -1,3 +1,7 @@
+## v0.3.0
+
+* Add test-kitchen coverage and documentation. 
+
 ## v0.2.3
 
 * Fix typo in "manage" resource definitions

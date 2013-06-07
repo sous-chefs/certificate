@@ -1,1 +1,3 @@
 metadata.json
+.kitchen/
+.kitchen.local.yml

@@ -1,3 +1,7 @@
+## v0.4.1
+
+* FC017: LWRP does not notify when updated: ./providers/manage.rb:24
+
 ## v0.4.0
 
 * Add `nginx_cert` knob for chained certificates

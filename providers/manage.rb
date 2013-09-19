@@ -45,6 +45,7 @@ action :create do
     end
     cert_file_resource new_resource.key_file,   ssl_item['key'], :private => true
   end
+  new_resource.updated_by_last_action(true)
 end
 
 def cert_directory_resource(dir, options = {})

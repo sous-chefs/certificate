@@ -29,12 +29,20 @@ action :create do
     cert_directory_resource "certs"
     cert_directory_resource "private", :private => true
 
-    cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
-    cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
+    if new_resource.nginx_cert
+      cert_file_resource "certs/#{new_resource.cert_file}",  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
+    else
+      cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
+      cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
+    end
     cert_file_resource "private/#{new_resource.key_file}", ssl_item['key'], :private => true
   else
-    cert_file_resource new_resource.cert_file,  ssl_item['cert']
-    cert_file_resource new_resource.chain_file, ssl_item['chain']
+    if new_resource.nginx_cert
+      cert_file_resource "certs/#{new_resource.cert_file}",  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
+    else
+      cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
+      cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
+    end
     cert_file_resource new_resource.key_file,   ssl_item['key'], :private => true
   end
 end

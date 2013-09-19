@@ -1,3 +1,7 @@
+## v0.4.0
+
+* Add `nginx_cert` knob for chained certificates
+
 ## v0.3.0
 
 * Add test-kitchen coverage and documentation. 

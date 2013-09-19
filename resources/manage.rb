@@ -46,6 +46,7 @@ attribute :cert_path, :kind_of => String, :default => "/opt/local/etc/openssl"
 else
 attribute :cert_path, :kind_of => String, :default => "/etc/ssl"
 end
+attribute :nginx_cert, :kind_of => [ TrueClass, FalseClass ], :default => false
 attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
 attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
 attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"

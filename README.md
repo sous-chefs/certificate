@@ -144,6 +144,7 @@ The LWRP resource attributes are as follows.
   * cert\_file - The basename of the x509 certificate, defaults to {node.fqdn}.pem
   * key\_file - The basename of the private key file, defaults to {node.fqdn}.key
   * chain\_file - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
+  * nginx\_cert - If `true`, combines server and CA certificates for nginx. Default `false`
   * owner - The file owner, defaults to root
   * group - The file group owner, defaults to root
   * cookbook - The cookbook containing the erb template, defaults to certificate

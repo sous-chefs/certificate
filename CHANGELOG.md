@@ -1,3 +1,7 @@
+## v0.4.2
+
+* Issue #15, Revert FC017 change
+
 ## v0.4.1
 
 * FC017: LWRP does not notify when updated: ./providers/manage.rb:24

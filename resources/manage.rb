@@ -29,7 +29,7 @@ actions :create
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => "certificates"
 attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
-attribute :search_id, :kind_of => String, :name_attribute => true 
+attribute :search_id, :kind_of => String, :name_attribute => true
 
 # :cert_file is the filename for the managed certificate.
 # :key_file is the filename for the managed key.
@@ -47,6 +47,7 @@ else
 attribute :cert_path, :kind_of => String, :default => "/etc/ssl"
 end
 attribute :nginx_cert, :kind_of => [ TrueClass, FalseClass ], :default => false
+attribute :combined_file, :kind_of => [ TrueClass, FalseClass ], :default => false
 attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
 attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
 attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
@@ -56,5 +57,5 @@ attribute :create_subfolders, :kind_of => [ TrueClass, FalseClass ], :default =>
 attribute :owner, :kind_of => String, :default => "root"
 attribute :group, :kind_of => String, :default => "root"
 
-# Cookbook to search for blank.erb template 
+# Cookbook to search for blank.erb template
 attribute :cookbook, :kind_of => String, :default => "certificate"

@@ -25,7 +25,11 @@ action :create do
   ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
   ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
 
-  if new_resource.create_subfolders
+  if new_resource.combined_file
+    cert_file_resource new_resource.cert_file,
+      "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
+      :private => true
+  elsif new_resource.create_subfolders
     cert_directory_resource "certs"
     cert_directory_resource "private", :private => true
 

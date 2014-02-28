@@ -104,7 +104,7 @@ with encrypted data bags.
 
 ## License and Author
 
-Author:: Eric G. Wolfe <wolfe21@marshall.edu> 
+Author:: Eric G. Wolfe <eric.wolfe@gmail.com> 
 
 Copyright:: 2013, Eric G. Wolfe
 

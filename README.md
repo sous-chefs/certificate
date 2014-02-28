@@ -1,20 +1,25 @@
-# Certificate [![Build Status](https://secure.travis-ci.org/atomic-penguin/cookbook-certificate.png?branch=master)](http://travis-ci.org/atomic-penguin/cookbook-certificate)
+Certificate cookbook
+====================
 
-## Description
+[![Build Status](https://secure.travis-ci.org/atomic-penguin/cookbook-certificate.png?branch=master)](http://travis-ci.org/atomic-penguin/cookbook-certificate)
+
+Description
+-----------
 
 This recipe automates the common task of managing x509 certificates and keys
 from encrypted Data Bags.  This cookbook provides a flexible and re-usable
 LWRP which can be plugged into other recipes, such as the postfix or apache2
 cookbooks.
 
-### Important note
+#### Important note
 
 The KITCHEN.md documents the `test/integration` files used to validate
-the certificate\_manage LWRP converges correctly.  Files in the `test/integration`
+the `certificate_manage` LWRP converges correctly.  Files in the `test/integration`
 should not be used in production.  Files include a self-signed "snake oil" certificate/key
-and an encrypted\_data\_bag\_secret file which are not secure to use beyond testing.
+and an `encrypted_data_bag_secret` file which are not secure to use beyond testing.
 
-## Requirements
+Requirements
+------------
 
 You do need to prepare an encrypted data bag, containing the certificates,
 private keys, and CA bundles you wish to deploy to servers with the LWRP.
@@ -37,7 +42,7 @@ named *certificates*.  However, you may override this with the
     knife data bag create certificates
 
 You need to convert your certificate, private keys, and CA bundles into
-single-line blobs with literal \n characters.  This is so it may be
+single-line blobs with literal `\n` characters.  This is so it may be
 copy/pasted into your data bag.  You can use a Perl or Ruby one-liner for
 this conversion.
 
@@ -95,11 +100,12 @@ trusted by the server.
     }
 
 
-## Recipes
+Recipes
+-------
 
-This cookbook comes with two simple example recipes for using the *certificate_manage* LWRP.
+This cookbook comes with three simple example recipes for using the *certificate_manage* LWRP.
 
-### default
+#### default
 
 Searches the data bag, *certificates*, for an object with an *id* matching
 *node.hostname*.  Then the recipe places the decrypted certificates and keys
@@ -109,7 +115,7 @@ default owner and group owner of the resulting files are *root*.
 The resulting files will be named {node.fqdn}.pem (cert),
 {node.fqdn}.key (key), and {node.hostname}-bundle.crt (CA Root chain).
 
-### wildcard
+#### wildcard
 
 Same as the default recipe, except for the search *id* is *wildcard*.
 The resulting files will be named wildcard.pem (cert), wildcard.key (key),
@@ -131,31 +137,33 @@ Set ID and LWRP attributes to node attribute following...
     ]
 
 
-## Resources/Providers
+Resources/Providers
+-------------------
 
-### resources
+#### resources
 
 The LWRP resource attributes are as follows.
 
-  * data\_bag - Data bag index to search, defaults to certificates
-  * data\_bag\_secret - Path to the file with the data bag secret
-  * search\_id - Data bag id to search for, defaults to provider name
-  * cert\_path - Top-level SSL directory, defaults to vendor specific location
-  * cert\_file - The basename of the x509 certificate, defaults to {node.fqdn}.pem
-  * key\_file - The basename of the private key file, defaults to {node.fqdn}.key
-  * chain\_file - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
-  * nginx\_cert - If `true`, combines server and CA certificates for nginx. Default `false`
-  * combined\_file - If `true`, combines server cert, CA cert and private key into a single file. Default `false`
-  * owner - The file owner, defaults to root
-  * group - The file group owner, defaults to root
-  * cookbook - The cookbook containing the erb template, defaults to certificate
-  * create\_subfolders - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
+  * `data_bag` - Data bag index to search, defaults to certificates
+  * `data_bag_secret` - Path to the file with the data bag secret
+  * `search_id` - Data bag id to search for, defaults to provider name
+  * `cert_path` - Top-level SSL directory, defaults to vendor specific location
+  * `cert_file` - The basename of the x509 certificate, defaults to {node.fqdn}.pem
+  * `key_file` - The basename of the private key file, defaults to {node.fqdn}.key
+  * `chain_file` - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
+  * `nginx_cert` - If `true`, combines server and CA certificates for nginx. Default `false`
+  * `combined_file` - If `true`, combines server cert, CA cert and private key into a single file. Default `false`
+  * `owner` - The file owner, defaults to root
+  * `group` - The file group owner, defaults to root
+  * `cookbook` - The cookbook containing the erb template, defaults to certificate
+  * `create_subfolders` - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
 
-### providers
+#### providers
 
-  * certificate\_manage - The reusable LWRP to manage certificates, keys, and CA bundles
+  * `certificate_manage` - The reusable LWRP to manage certificates, keys, and CA bundles
 
-## Usage
+Usage
+-----
 
 Here is a flushed out example using the LWRP to manage your certificate
 items on a Postfix bridgehead.  The following example should select the
@@ -172,9 +180,10 @@ certificate_manage "mail" do
 end
 ```
 
-## License and Author
+License and Author
+------------------
 
-Author:: Eric G. Wolfe <wolfe21@marshall.edu>
+Author:: Eric G. Wolfe <eric.wolfe@gmail.com>
 
 Copyright:: 2012, Eric G. Wolfe
 

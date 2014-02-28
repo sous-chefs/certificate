@@ -183,7 +183,7 @@ end
 License and Author
 ------------------
 
-Author:: Eric G. Wolfe <eric.wolfe@gmail.com>
+Author:: Eric G. Wolfe <eric.wolfe@gmail.com> [![endorse](https://api.coderwall.com/atomic-penguin/endorsecount.png)](https://coderwall.com/atomic-penguin)
 
 Copyright:: 2012, Eric G. Wolfe
 

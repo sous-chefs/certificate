@@ -26,7 +26,7 @@ First, create a **data bag secret** as follows.  You need to manually copy
 the *encrypted_data_bag_secret* to */etc/chef* on your servers, or place it
 there as part of your bootstrap process.  For example, you may choose to
 do deploy the secret file with kickstart or preseed as part of the OS
-install process. 
+install process.
 
     openssl rand -base64 512 > ~/.chef/encrypted_data_bag_secret
 
@@ -57,7 +57,7 @@ Into this:
 
 Finally, you'll want to create the data bag object to contain your certs,
 keys, and optionally your CA root chain bundle.  The default recipe uses
-the OHAI attribute *hostname* as a *search_id*, since the data bag id may not 
+the OHAI attribute *hostname* as a *search_id*, since the data bag id may not
 contain dot characters used in the *fqdn* attribute.
 
 The cookbook also contains an example *wildcard* recipe to use with wildcard
@@ -117,7 +117,7 @@ and wildcard-bundle.crt (CA Root chain)
 
 ### manage_by_attributes
 
-Retrieve search keys from attributes "certificate".  
+Retrieve search keys from attributes "certificate".
 Set ID and LWRP attributes to node attribute following...
 
     "certificate": [
@@ -145,6 +145,7 @@ The LWRP resource attributes are as follows.
   * key\_file - The basename of the private key file, defaults to {node.fqdn}.key
   * chain\_file - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
   * nginx\_cert - If `true`, combines server and CA certificates for nginx. Default `false`
+  * combined\_file - If `true`, combines server cert, CA cert and private key into a single file. Default `false`
   * owner - The file owner, defaults to root
   * group - The file group owner, defaults to root
   * cookbook - The cookbook containing the erb template, defaults to certificate
@@ -169,11 +170,11 @@ certificate_manage "mail" do
   owner "postfix"
   group "postfix"
 end
-```      
+```
 
 ## License and Author
 
-Author:: Eric G. Wolfe <wolfe21@marshall.edu> 
+Author:: Eric G. Wolfe <wolfe21@marshall.edu>
 
 Copyright:: 2012, Eric G. Wolfe
 

@@ -1,6 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf'
+gem 'berkshelf', '~> 2.0'
+gem 'foodcritic', '~> 3.0'
 gem 'knife-solo_data_bag'
-gem 'test-kitchen', git: 'git://github.com/opscode/test-kitchen.git', branch: 'master'
-gem 'kitchen-vagrant', git: 'git://github.com/adesso-mobile/kitchen-vagrant.git', branch: 'master', :group => 'integration'
+gem 'rubocop'
+gem 'rubocop-checkstyle_formatter', require: false
+gem 'rainbow', '<= 1.99.1' 
+
+group :integration do
+  gem 'test-kitchen'
+  gem 'kitchen-vagrant'
+end

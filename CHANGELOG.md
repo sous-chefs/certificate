@@ -4,9 +4,11 @@ certificate cookbook changelog
 v0.5.0
 ------
 
-* ChefSpec create_certificate_manage matcher added
-
-TODO: tests, of course
+* ChefSpec create_certificate_manage matcher added.
+* Added combined_file resource.
+* Update build files.
+* Added Rubocop.
+* Added BATS tests.
 
 v0.4.3
 ------

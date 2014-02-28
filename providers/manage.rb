@@ -27,11 +27,11 @@ action :create do
 
   if new_resource.combined_file
     cert_file_resource new_resource.cert_file,
-      "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
-      :private => true
+                       "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
+                       private: true
   elsif new_resource.create_subfolders
-    cert_directory_resource "certs"
-    cert_directory_resource "private", :private => true
+    cert_directory_resource 'certs'
+    cert_directory_resource 'private', private: true
 
     if new_resource.nginx_cert
       cert_file_resource "certs/#{new_resource.cert_file}",  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
@@ -39,7 +39,7 @@ action :create do
       cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
       cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
     end
-    cert_file_resource "private/#{new_resource.key_file}", ssl_item['key'], :private => true
+    cert_file_resource "private/#{new_resource.key_file}", ssl_item['key'], private: true
   else
     if new_resource.nginx_cert
       cert_file_resource new_resource.cert_file,  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
@@ -47,7 +47,7 @@ action :create do
       cert_file_resource new_resource.cert_file,  ssl_item['cert']
       cert_file_resource new_resource.chain_file, ssl_item['chain']
     end
-    cert_file_resource new_resource.key_file, ssl_item['key'], :private => true
+    cert_file_resource new_resource.key_file, ssl_item['key'], private: true
   end
 end
 
@@ -57,19 +57,18 @@ def cert_directory_resource(dir, options = {})
     group new_resource.group
     mode(options[:private] ? 00750 : 00755)
     recursive true
-    not_if { ::File.exist? ::File.join(new_resource.cert_path, dir) }
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 end
 
 def cert_file_resource(path, content, options = {})
   r = template ::File.join(new_resource.cert_path, path) do
-    source "blank.erb"
+    source 'blank.erb'
     cookbook new_resource.cookbook
     owner new_resource.owner
     group new_resource.group
     mode(options[:private] ? 00640 : 00644)
-    variables :file_content => content
+    variables file_content: content
     only_if { content }
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?

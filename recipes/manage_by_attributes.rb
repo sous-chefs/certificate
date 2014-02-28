@@ -19,17 +19,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 node['certificate'].each do |cert|
   cert.each_pair do |id, opts|
     Chef::Log.debug "Create certs #{id} from attribute"
     certificate_manage id do
       action :create
-      unless opts == nil
-        opts.each {|k,v| self.__send__(k, v) if self.respond_to?(k) }
-      end
+      opts.each { |k, v| __send__(k, v) if self.respond_to?(k) } unless opts.nil?
     end
   end
 end
-

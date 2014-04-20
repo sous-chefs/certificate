@@ -43,9 +43,11 @@ named *certificates*.  However, you may override this with the
 
 You need to convert your certificate, private keys, and CA bundles into
 single-line blobs with literal `\n` characters.  This is so it may be
-copy/pasted into your data bag.  You can use a Perl or Ruby one-liner for
-this conversion.
+copy/pasted into your data bag. You can use `sed` or you can use a Perl 
+or Ruby one-liner for this conversion.
 
+    cat <filename> | sed s/$/\\\\n/ | tr -d '\n'
+    -OR-
     /usr/bin/env ruby -e 'p ARGF.read' <filename>
     -OR-
     perl -pe 's!(\x0d)?\x0a!\\n!g' <filename>

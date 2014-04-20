@@ -1,4 +1,25 @@
-*.lock
-metadata.json
-.kitchen/
-.kitchen.local.yml
+/metadata.json
+
+# Test Kitchen
+/.kitchen/
+/.kitchen.local.yml
+
+# CTags files
+/tags
+
+# Bundler
+/Gemfile.lock
+/bin/
+/.bundle/
+
+# Berkshelf
+/Berksfile.lock
+/.vagrant/
+
+# Editor temp files
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~

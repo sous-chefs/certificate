@@ -1,6 +1,13 @@
 certificate cookbook changelog
 ==============================
 
+v0.5.2
+------
+
+* Update documentation
+* Update gitignore
+* Rubocop whitespace corrections 
+
 v0.5.0
 ------
 

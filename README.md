@@ -23,8 +23,8 @@ Requirements
 
 You do need to prepare an encrypted data bag, containing the certificates,
 private keys, and CA bundles you wish to deploy to servers with the LWRP.
-I used Joshua Timberman's [blog post](https://jtimberman.posterous.com/64227128),
-and the Opscode [Wiki documentation](http://wiki.opscode.com/display/chef/Encrypted+Data+Bags)
+I used Joshua Timberman's [blog post](http://jtimberman.housepub.org/blog/2011/08/06/encrypted-data-bag-for-postfix-sasl-authentication/),
+and the Opscode [Wiki documentation](https://wiki.opscode.com/display/chef10/Encrypted+Data+Bags)
 as a reference in creating this cookbook.
 
 First, create a **data bag secret** as follows.  You need to manually copy

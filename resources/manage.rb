@@ -30,6 +30,7 @@ actions :create
 attribute :data_bag, kind_of: String, default: 'certificates'
 attribute :data_bag_secret, kind_of: String, default: Chef::Config['encrypted_data_bag_secret']
 attribute :search_id, kind_of: String, name_attribute: true
+attribute :ignore_missing, kind_of: [TrueClass, FalseClass], default: false
 
 # :ngnix_cert is a PEM which combine host cert and CA trust chain for nginx.
 # :combined_file is a PEM which combine certs and keys in one file, for things such as haproxy.

@@ -1,6 +1,13 @@
 certificate cookbook changelog
 ==============================
 
+v0.6.0
+------
+
+* Add thor-scmversion
+* Add use_inline_resources, if defined
+* Add ignore_missing parameter
+
 v0.5.2
 ------
 

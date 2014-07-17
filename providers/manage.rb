@@ -21,7 +21,7 @@ def whyrun_supported?
   true
 end
 
-use_inline_resources
+use_inline_resources if defined?(use_inline_resources)
 
 action :create do
   ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)

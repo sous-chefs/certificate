@@ -62,3 +62,22 @@ attribute :group, :kind_of => String, :default => 'root'
 
 # Cookbook to search for blank.erb template
 attribute :cookbook, :kind_of => String, :default => 'certificate'
+
+# Accesors for determining where files should be placed
+def certificate
+  bits = [cert_path, cert_file]
+  bits.insert(1, 'certs') if create_subfolders
+  ::File.join(bits)
+end
+
+def key
+  bits = [cert_path, key_file]
+  bits.insert(1, 'private') if create_subfolders
+  ::File.join(bits)
+end
+
+def chain
+  bits = [cert_path, chain_file]
+  bits.insert(1, 'certs') if create_subfolders
+  ::File.join(bits)
+end

@@ -160,6 +160,12 @@ The LWRP resource attributes are as follows.
   * `cookbook` - The cookbook containing the erb template, defaults to certificate
   * `create_subfolders` - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
 
+Also exposed are several readonly attributes for helping in other recipes:
+
+  * `certificate` - The final path of the certificate file. i.e. `#{cert_path}/certs/#{cert_file}`
+  * `key` - The final path of the key file. i.e. `#{cert_path}/private/#{key_file}`
+  * `chain` - The final path of the chain file. i.e. `#{cert_path}/certs/#{chain_file}`
+
 #### providers
 
   * `certificate_manage` - The reusable LWRP to manage certificates, keys, and CA bundles

@@ -1,6 +1,12 @@
 certificate cookbook changelog
 ==============================
 
+v0.6.3
+------
+
+* #30 Hash rockets
+* #34 Rescue version
+
 v0.6.0
 ------
 

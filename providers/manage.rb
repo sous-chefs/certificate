@@ -24,16 +24,17 @@ end
 use_inline_resources if defined?(use_inline_resources)
 
 action :create do
+  search_id = new_resource.search_id.gsub('.', '_')
   ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
   ssl_item = nil
   if new_resource.ignore_missing
     begin
-      ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+      ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, search_id, ssl_secret)
     rescue
       ssl_item = nil
     end
   else
-    ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+    ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, search_id, ssl_secret)
   end
 
   unless ssl_item.nil?

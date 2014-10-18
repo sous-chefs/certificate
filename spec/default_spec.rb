@@ -13,4 +13,11 @@ describe 'certificate::default' do
       Chef::Config['encrypted_data_bag_secret'] = secret_file_path
     end.converge(described_recipe)
   end
+
+  it 'Replace dots with underscore in item name to search' do
+    allow(Chef::EncryptedDataBagItem).to receive(:load)
+                                             .with('certificates', 'example_com', @secret)
+                                             .and_return(@data_bag_item_content)
+    expect(chef_run).to create_certificate_manage('example.com')
+  end
 end

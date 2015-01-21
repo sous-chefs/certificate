@@ -62,3 +62,6 @@ attribute :group, :kind_of => String, :default => 'root'
 
 # Cookbook to search for blank.erb template
 attribute :cookbook, :kind_of => String, :default => 'certificate'
+
+# Set the templates to sensitive by default so the content of the SSL cert isn't displayed to standard out
+attribute :sensitive, :kind_of => [TrueClass, FalseClass], :default => true

@@ -25,43 +25,35 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :create do
   ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
-  ssl_item = nil
-  if new_resource.ignore_missing
+  ssl_item =
     begin
-      ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
-    rescue
-      ssl_item = nil
+      Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+    rescue => e
+      raise e unless new_resource.ignore_missing
+      nil
     end
+
+  next if ssl_item.nil?
+
+  if new_resource.combined_file
+    cert_file_resource ::File.join(new_resource.cert_path, new_resource.cert_file),
+                       "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
+                       :private => true
+    next
+  end
+
+  if new_resource.create_subfolders
+    cert_directory_resource 'certs'
+    cert_directory_resource 'private', :private => true
+  end
+
+  if new_resource.nginx_cert
+    cert_file_resource new_resource.certificate, "#{ssl_item['cert']}\n#{ssl_item['chain']}"
   else
-    ssl_item = Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+    cert_file_resource new_resource.certificate, ssl_item['cert']
+    cert_file_resource new_resource.chain, ssl_item['chain']
   end
-
-  unless ssl_item.nil?
-    if new_resource.combined_file
-      cert_file_resource new_resource.cert_file,
-                         "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
-                         :private => true
-    elsif new_resource.create_subfolders
-      cert_directory_resource 'certs'
-      cert_directory_resource 'private', :private => true
-
-      if new_resource.nginx_cert
-        cert_file_resource "certs/#{new_resource.cert_file}",  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
-      else
-        cert_file_resource "certs/#{new_resource.cert_file}",  ssl_item['cert']
-        cert_file_resource "certs/#{new_resource.chain_file}", ssl_item['chain']
-      end
-      cert_file_resource "private/#{new_resource.key_file}", ssl_item['key'], :private => true
-    else
-      if new_resource.nginx_cert
-        cert_file_resource new_resource.cert_file,  "#{ssl_item['cert']}\n#{ssl_item['chain']}"
-      else
-        cert_file_resource new_resource.cert_file,  ssl_item['cert']
-        cert_file_resource new_resource.chain_file, ssl_item['chain']
-      end
-      cert_file_resource new_resource.key_file, ssl_item['key'], :private => true
-    end
-  end
+  cert_file_resource new_resource.key, ssl_item['key'], :private => true
 end
 
 def cert_directory_resource(dir, options = {})
@@ -75,7 +67,7 @@ def cert_directory_resource(dir, options = {})
 end
 
 def cert_file_resource(path, content, options = {})
-  r = template ::File.join(new_resource.cert_path, path) do
+  r = template path do
     source 'blank.erb'
     cookbook new_resource.cookbook
     owner new_resource.owner

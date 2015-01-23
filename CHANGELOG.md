@@ -1,6 +1,15 @@
 certificate cookbook changelog
 ==============================
 
+v0.7.0
+------
+
+* #33 expose final path of managed objects.
+  - [See](https://github.com/atomic-penguin/cookbook-certificate#readonly-attribute-example) for usage.
+* #38 normalize dots to underscore in search_id
+* #40 chefspec matcher deprecation
+* Update travis config 
+
 v0.6.3
 ------
 

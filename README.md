@@ -64,8 +64,9 @@ Into this:
 
 Finally, you'll want to create the data bag object to contain your certs,
 keys, and optionally your CA root chain bundle.  The default recipe uses
-the OHAI attribute *hostname* as a *search_id*, since the data bag id may not
-contain dot characters used in the *fqdn* attribute.
+the OHAI attribute *hostname* as a *search_id*.  With version 0.7.0, and newer,
+one can use an *fqdn* as the *search_id*, the library will normalize dots into
+underscores.
 
 The cookbook also contains an example *wildcard* recipe to use with wildcard
 certificates (\*.example.com) certificates.

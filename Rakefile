@@ -1,5 +1,9 @@
 #!/usr/bin/env rake
 
+# chefspec task against spec/*_spec.rb
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:chefspec)
+
 desc 'Foodcritic linter'
 task :foodcritic do
   sh 'foodcritic -f any -t ~FC017 .'
@@ -34,7 +38,4 @@ task :deploy do
 end
 
 # default tasks are quick, commit tests
-task default: %w(foodcritic rubocop)
-
-# jenkins tasks format for metric tracking
-task jenkins: %w(foodcritic rubocop)
+task default: %w(chefspec foodcritic rubocop)

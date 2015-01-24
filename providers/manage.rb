@@ -70,6 +70,7 @@ end
 def cert_file_resource(path, content, options = {})
   r = template path do
     source 'blank.erb'
+    sensitive true
     cookbook new_resource.cookbook
     owner new_resource.owner
     group new_resource.group

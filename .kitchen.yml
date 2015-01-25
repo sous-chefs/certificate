@@ -13,10 +13,9 @@ suites:
   encrypted_data_bag_secret_key_path: "test/integration/default/encrypted_data_bag_secret"
   run_list: ["recipe[certificate::manage_by_attributes]"]
   attributes:
-    certificate_test:
-      data_bag_type: 'encrypted'
     certificate: [
       test: {
+        data_bag_type: 'encrypted',
         nginx_cert: true,
         cert_file: "test.pem",
         key_file: "test.key"
@@ -26,10 +25,9 @@ suites:
   data_bag_path: "test/integration/unencrypted/data_bags"
   run_list: ["recipe[certificate::manage_by_attributes]"]
   attributes:
-    certificate_test:
-      data_bag_type: 'unencrypted'
     certificate: [
       test: {
+        data_bag_type: 'unencrypted',
         nginx_cert: true,
         cert_file: "test.pem",
         key_file: "test.key"
@@ -39,10 +37,9 @@ suites:
   data_bag_path: "test/integration/vault/data_bags"
   run_list: ["recipe[certificate::manage_by_attributes]"]
   attributes:
-    certificate_test:
-      data_bag_type: 'vault'
     certificate: [
       test: {
+        data_bag_type: 'vault',
         nginx_cert: true,
         cert_file: "test.pem",
         key_file: "test.key"

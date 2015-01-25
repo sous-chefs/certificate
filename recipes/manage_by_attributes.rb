@@ -23,7 +23,6 @@ node['certificate'].each do |cert|
   cert.each_pair do |id, opts|
     Chef::Log.debug "Create certs #{id} from attribute"
     certificate_manage id do
-      data_bag_type node['certificate_test']['data_bag_type']
       action :create
       opts.each { |k, v| __send__(k, v) if self.respond_to?(k) } unless opts.nil?
     end

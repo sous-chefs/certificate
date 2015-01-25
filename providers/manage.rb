@@ -57,7 +57,7 @@ action :create do
         nil
       end
   else
-    raise "Unsupported data bag type #{new_resource.data_bag_type}"
+    fail "Unsupported data bag type #{new_resource.data_bag_type}"
   end
 
   next if ssl_item.nil?

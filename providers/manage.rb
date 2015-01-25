@@ -51,7 +51,7 @@ action :create do
       begin
         chef_gem 'chef-vault'
         require 'chef-vault'
-        ChefVaultItem.load(new_resource.data_bag, search_id)
+        ChefVault::Item.load(new_resource.data_bag, search_id)
       rescue => e
         raise e unless new_resource.ignore_missing
         nil

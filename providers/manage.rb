@@ -27,7 +27,7 @@ action :create do
   search_id = new_resource.search_id.gsub('.', '_')
   # vault doesn't work in chef-solo
   db_type = new_resource.data_bag_type
-  db_type = "unencrypted" if db_type == "vault" and Chef::Config[:solo]
+  db_type = 'unencrypted' if db_type == 'vault' && Chef::Config[:solo]
   case db_type
   when 'encrypted'
     ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)

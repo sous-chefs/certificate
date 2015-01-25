@@ -22,3 +22,29 @@ suites:
         key_file: "test.key"
       }
     ]
+- name: unencrypted
+  data_bag_path: "test/integration/unencrypted/data_bags"
+  run_list: ["recipe[certificate::manage_by_attributes]"]
+  attributes:
+    certificate_test:
+      data_bag_type: 'unencrypted'
+    certificate: [
+      test: {
+        nginx_cert: true,
+        cert_file: "test.pem",
+        key_file: "test.key"
+      }
+    ]
+- name: vault
+  data_bag_path: "test/integration/unencrypted/data_bags"
+  run_list: ["recipe[certificate::manage_by_attributes]"]
+  attributes:
+    certificate_test:
+      data_bag_type: 'vault'
+    certificate: [
+      test: {
+        nginx_cert: true,
+        cert_file: "test.pem",
+        key_file: "test.key"
+      }
+    ]

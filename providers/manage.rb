@@ -25,14 +25,34 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :create do
   search_id = new_resource.search_id.gsub('.', '_')
-  ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
-  ssl_item =
-    begin
-      Chef::EncryptedDataBagItem.load(new_resource.data_bag, search_id, ssl_secret)
-    rescue => e
-      raise e unless new_resource.ignore_missing
-      nil
-    end
+  case new_resource.data_bag_type
+  when 'encrypted'
+    ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
+    ssl_item =
+      begin
+        Chef::EncryptedDataBagItem.load(new_resource.data_bag, search_id, ssl_secret)
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
+  when 'unencrypted'
+    ssl_item =
+      begin
+        Chef::DataBagItem.load(new_resource.data_bag, search_id)
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
+  when 'vault'
+    ssl_item =
+      begin
+        chef_gem 'chef-vault'
+        require 'chef-vault'
+        chef_vault_item(new_resource.data_bag, search_id)
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
 
   next if ssl_item.nil?
 

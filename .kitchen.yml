@@ -36,7 +36,7 @@ suites:
       }
     ]
 - name: vault
-  data_bag_path: "test/integration/unencrypted/data_bags"
+  data_bag_path: "test/integration/vault/data_bags"
   run_list: ["recipe[certificate::manage_by_attributes]"]
   attributes:
     certificate_test:

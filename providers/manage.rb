@@ -25,7 +25,10 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :create do
   search_id = new_resource.search_id.gsub('.', '_')
-  case new_resource.data_bag_type
+  # vault doesn't work in chef-solo
+  db_type = new_resource.data_bag_type
+  db_type = "unencrypted" if db_type == "vault" and Chef::Config[:solo]
+  case db_type
   when 'encrypted'
     ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
     ssl_item =
@@ -48,7 +51,7 @@ action :create do
       begin
         chef_gem 'chef-vault'
         require 'chef-vault'
-        chef_vault_item(new_resource.data_bag, search_id)
+        ChefVaultItem.load(new_resource.data_bag, search_id)
       rescue => e
         raise e unless new_resource.ignore_missing
         nil

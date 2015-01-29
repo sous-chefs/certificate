@@ -52,6 +52,8 @@ action :create do
         chef_gem 'chef-vault'
         require 'chef-vault'
         ChefVault::Item.load(new_resource.data_bag, search_id)
+      rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
+        Chef::DataBagItem.load(new_resource.data_bag, search_id)
       rescue => e
         raise e unless new_resource.ignore_missing
         nil

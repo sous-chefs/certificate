@@ -58,6 +58,7 @@ action :create do
         rescue => e
           raise e unless new_resource.ignore_missing
           nil
+        end
       rescue => e
         raise e unless new_resource.ignore_missing
         nil

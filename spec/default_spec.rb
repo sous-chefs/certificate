@@ -14,9 +14,10 @@ describe 'certificate::default' do
     end.converge(described_recipe)
   end
 
-  it 'Replace dots with underscore in item name to search' do
+  # This was a bug in Knife, see CHEF-3531
+  it '[Issue #38] does not normalize dots in hostnames' do
     allow(Chef::EncryptedDataBagItem).to receive(:load)
-      .with('certificates', 'example_com', @secret)
+      .with('certificates', 'example.com', @secret)
       .and_return(@data_bag_item_content)
     expect(chef_run).to create_certificate_manage('example.com')
   end

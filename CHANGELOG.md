@@ -1,6 +1,16 @@
 certificate cookbook changelog
 ==============================
 
+v0.8.0
+------
+
+Revert #38
+    
+This previous change worked around a bug in Knife that limited use of characters
+in data bags.  See [CHEF-3531](https://github.com/chef/chef/pull/1104) for more information.
+    
+This reverts commit 7b091cfe039da729926d12a4e31da2db6aceb007.
+    
 v0.7.0
 ------
 

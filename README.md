@@ -64,9 +64,9 @@ Into this:
 
 Finally, you'll want to create the data bag object to contain your certs,
 keys, and optionally your CA root chain bundle.  The default recipe uses
-the OHAI attribute *hostname* as a *search_id*.  With version 0.7.0, and newer,
-one can use an *fqdn* as the *search_id*, the library will normalize dots into
-underscores.
+the OHAI attribute *hostname* as a *search_id*.  One can use an *fqdn* as the *search_id*.
+Older versions of Knife have a strict character filter list which prevents the use of `.`
+separators in data bag IDs.
 
 The cookbook also contains an example *wildcard* recipe to use with wildcard
 certificates (\*.example.com) certificates.

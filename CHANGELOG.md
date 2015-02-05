@@ -1,6 +1,11 @@
 certificate cookbook changelog
 ==============================
 
+v0.8.1
+------
+
+* Fix bad pick on merge conflict from revert.
+
 v0.8.0
 ------
 

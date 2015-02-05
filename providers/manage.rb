@@ -27,7 +27,7 @@ action :create do
   ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
   ssl_item =
     begin
-      Chef::EncryptedDataBagItem.load(new_resource.data_bag, search_id, ssl_secret)
+      Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
     rescue => e
       raise e unless new_resource.ignore_missing
       nil

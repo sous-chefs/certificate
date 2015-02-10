@@ -34,7 +34,7 @@ attribute :data_bag_type, :kind_of => String, :default => 'encrypted'
 attribute :search_id, :kind_of => String, :name_attribute => true
 attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
 
-# :ngnix_cert is a PEM which combine host cert and CA trust chain for nginx.
+# :nginx_cert is a PEM which combine host cert and CA trust chain for nginx.
 # :combined_file is a PEM which combine certs and keys in one file, for things such as haproxy.
 # :cert_file is the filename for the managed certificate.
 # :key_file is the filename for the managed key.

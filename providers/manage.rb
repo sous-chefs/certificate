@@ -51,9 +51,13 @@ action :create do
         chef_gem 'chef-vault'
         require 'chef-vault'
         ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
-      rescue => e
-        raise e unless new_resource.ignore_missing
-        nil
+      rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
+        begin
+          Chef::DataBagItem.load(new_resource.data_bag, search_id)
+        rescue => e
+          raise e unless new_resource.ignore_missing
+          nil
+        end
       end
   else
     fail "Unsupported data bag type #{new_resource.data_bag_type}"

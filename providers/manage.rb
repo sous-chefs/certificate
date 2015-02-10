@@ -53,7 +53,7 @@ action :create do
         ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
       rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
         begin
-          Chef::DataBagItem.load(new_resource.data_bag, search_id)
+          Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)
         rescue => e
           raise e unless new_resource.ignore_missing
           nil

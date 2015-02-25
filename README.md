@@ -204,6 +204,18 @@ certificate_manage "mail" do
 end
 ```
 
+##### Setting FQDN during the converge?
+
+If you are updating the FQDN of the node during converge, be sure to use [lazy attribute evaluation](https://docs.chef.io/resource_common.html#lazy-attribute-evaluation) when using the LWRP to ensure ```node['fqdn']``` refers to the updated value.
+
+```ruby
+certificate_manage "wildcard" do
+  cert_file lazy { "#{node['fqdn']}.pem" }
+  key_file lazy { "#{node['fqdn']}.key" }
+  chain_file lazy { "#{node['fqdn']}-bundle.crt" }
+end
+```
+
 License and Author
 ------------------
 

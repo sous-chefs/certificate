@@ -1,6 +1,13 @@
 certificate cookbook changelog
 ==============================
 
+v0.8.2
+------
+
+* #43 @hartfordfive added sensitive mode to hide certificates and keys in
+  console output.
+* #47 @fletchowns added documentation note concerning lazy attribute evaluation.
+
 v0.8.1
 ------
 

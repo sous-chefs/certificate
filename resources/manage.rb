@@ -20,6 +20,7 @@
 def initialize(*args)
   super
   @action = :create
+  @sensitive = true
 end
 
 actions :create

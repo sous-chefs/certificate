@@ -1,13 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf', '~> 3.1'
-gem 'foodcritic', '~> 4.0'
+gem 'berkshelf'
+gem 'foodcritic'
 gem 'knife-solo_data_bag'
 gem 'rubocop'
-gem 'chefspec', '~> 4.0'
+gem 'chefspec'
 gem 'thor-scmversion'
 
 group :integration do
-  gem 'test-kitchen'
-  gem 'kitchen-vagrant'
+  gem 'test-kitchen', '~> 1.4.0.rc.1'
+  gem 'kitchen-vagrant', '~> 0.17.0.rc.1'
 end

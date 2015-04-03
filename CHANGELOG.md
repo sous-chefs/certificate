@@ -1,6 +1,13 @@
 certificate cookbook changelog
 ==============================
 
+v1.0.0
+------
+
+* #45 @dmlb2000 added `data_bag_type` parameter and support for vault, or unencrypted modes.
+  - Using vault type data bags in chef-solo is not supported, and results in a fatal condition.
+* Update documentation for helper methods.
+
 v0.8.2
 ------
 
@@ -27,7 +34,7 @@ v0.7.0
 ------
 
 * #33 expose final path of managed objects.
-  - [See](https://github.com/atomic-penguin/cookbook-certificate#readonly-attribute-example) for usage.
+  - [See](https://github.com/atomic-penguin/cookbook-certificate#usage_certificate-key-chain-helper-method-usage) for usage.
 * #38 normalize dots to underscore in search_id
 * #40 chefspec matcher deprecation
 * Update travis config 

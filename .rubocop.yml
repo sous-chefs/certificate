@@ -6,3 +6,6 @@ HashSyntax:
   Enabled: False
 Style/RescueModifier:
   Enabled: false
+AllCops:
+  Exclude:
+  - '.kitchen/*'

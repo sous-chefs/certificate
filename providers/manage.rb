@@ -24,10 +24,7 @@ end
 use_inline_resources if defined?(use_inline_resources)
 
 action :create do
-  # vault doesn't work in chef-solo
-  db_type = new_resource.data_bag_type
-  db_type = 'unencrypted' if db_type == 'vault' && Chef::Config[:solo]
-  case db_type
+  case new_resource.data_bag_type
   when 'encrypted'
     ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
     ssl_item =
@@ -46,6 +43,8 @@ action :create do
         nil
       end
   when 'vault'
+    # vault doesn't work in chef-solo
+    Chef::Application.fatal!('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
     ssl_item =
       begin
         chef_gem 'chef-vault'

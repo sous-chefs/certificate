@@ -11,12 +11,18 @@ from encrypted Data Bags.  This cookbook provides a flexible and re-usable
 LWRP which can be plugged into other recipes, such as the postfix or apache2
 cookbooks.
 
-#### Important note
+#### Warning about Vault mode
 
-The KITCHEN.md documents the `test/integration` files used to validate
-the `certificate_manage` LWRP converges correctly.  Files in the `test/integration`
-should not be used in production.  Files include a self-signed "snake oil" certificate/key
-and an `encrypted_data_bag_secret` file which are not secure to use beyond testing.
+Vault mode is not supported in chef-solo, and will result in a failure condition.  One needs
+to select either encrypted, or unencrypted, `data_bag_type` for use with chef-solo.
+
+#### Testing with encrypted data_bags
+
+The KITCHEN.md is a reference document for testing encrypted data_bags with test-kitchen.
+The stub files in`test/integration` are used to validate the `certificate_manage` library.
+These stub files in `test/integration` should not be used in production.  These files include
+self-signed "snake oil" certificate/key and an `encrypted_data_bag_secret` file
+which are not secure to use beyond testing.
 
 Requirements
 ------------
@@ -149,6 +155,8 @@ The LWRP resource attributes are as follows.
 
   * `data_bag` - Data bag index to search, defaults to certificates
   * `data_bag_secret` - Path to the file with the data bag secret
+  * `data_bag_type` - encrypted, unencrypted, vault
+    - vault type data bags are not supported with chef-solo
   * `search_id` - Data bag id to search for, defaults to provider name
   * `cert_path` - Top-level SSL directory, defaults to vendor specific location
   * `cert_file` - The basename of the x509 certificate, defaults to {node.fqdn}.pem

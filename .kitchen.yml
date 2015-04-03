@@ -5,7 +5,7 @@ platforms:
 - name: ubuntu-12.04
 - name: ubuntu-10.04
 - name: centos-6.6
-- name: centos-5.10
+- name: centos-5.11
 
 suites:
 - name: default

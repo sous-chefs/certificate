@@ -169,27 +169,6 @@ The LWRP resource attributes are as follows.
   * `cookbook` - The cookbook containing the erb template, defaults to certificate
   * `create_subfolders` - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
 
-Also exposed are several readonly attributes for helping in other recipes:
-
-  * `certificate` - The final path of the certificate file. i.e. `#{cert_path}/certs/#{cert_file}`
-  * `key` - The final path of the key file. i.e. `#{cert_path}/private/#{key_file}`
-  * `chain` - The final path of the chain file. i.e. `#{cert_path}/certs/#{chain_file}`
-
-##### Readonly Attribute Example
-
-```rb
-# where node.fqdn = 'example.com'
-tld = certificate_manage 'top_level_domain'
-tld_cert_location = tld.certificate # => /etc/ssl/certs/example.com.pem
-
-# where node.fqdn = 'sub.example.com'
-sbd = certificate_manage 'sub_domain' do
-  cert_path '/bobs/emporium'
-  create_subfolders false
-end
-sbd_cert_location = sbd.key # => /bobs/emporium/sub.example.com.key
-```
-
 #### providers
 
   * `certificate_manage` - The reusable LWRP to manage certificates, keys, and CA bundles
@@ -210,6 +189,27 @@ certificate_manage "mail" do
   owner "postfix"
   group "postfix"
 end
+```
+
+##### .certificate, .key, .chain helper method usage
+
+Some helper methods are exposed for retrieving key/certificate paths in other recipes:
+
+  * `.certificate` - The final path of the certificate file. i.e. `#{cert_path}/certs/#{cert_file}`
+  * `.key` - The final path of the key file. i.e. `#{cert_path}/private/#{key_file}`
+  * `.chain` - The final path of the chain file. i.e. `#{cert_path}/certs/#{chain_file}`
+
+```rb
+# where node.fqdn = 'example.com'
+tld = certificate_manage 'top_level_domain'
+tld_cert_location = tld.certificate # => /etc/ssl/certs/example.com.pem
+
+# where node.fqdn = 'sub.example.com'
+sbd = certificate_manage 'sub_domain' do
+  cert_path '/bobs/emporium'
+  create_subfolders false
+end
+sbd_cert_location = sbd.key # => /bobs/emporium/sub.example.com.key
 ```
 
 ##### Setting FQDN during the converge?

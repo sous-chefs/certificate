@@ -8,3 +8,5 @@ version IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue '0.0.1'
 %w( amazon centos debian fedora redhat oracle scientific ubuntu smartos ).each do |os|
   supports os
 end
+
+depends 'chef-vault'

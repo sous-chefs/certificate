@@ -27,9 +27,11 @@ actions :create
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret
+# :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => 'certificates'
 attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
+attribute :data_bag_type, :kind_of => String, :default => 'encrypted'
 attribute :search_id, :kind_of => String, :name_attribute => true
 attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
 

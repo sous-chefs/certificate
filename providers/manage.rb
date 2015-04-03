@@ -24,14 +24,44 @@ end
 use_inline_resources if defined?(use_inline_resources)
 
 action :create do
-  ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
-  ssl_item =
-    begin
-      Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
-    rescue => e
-      raise e unless new_resource.ignore_missing
-      nil
-    end
+  # vault doesn't work in chef-solo
+  db_type = new_resource.data_bag_type
+  db_type = 'unencrypted' if db_type == 'vault' && Chef::Config[:solo]
+  case db_type
+  when 'encrypted'
+    ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
+    ssl_item =
+      begin
+        Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
+  when 'unencrypted'
+    ssl_item =
+      begin
+        Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
+  when 'vault'
+    ssl_item =
+      begin
+        chef_gem 'chef-vault'
+        require 'chef-vault'
+        ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
+      rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
+        begin
+          Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)
+        rescue => e
+          raise e unless new_resource.ignore_missing
+          nil
+        end
+      end
+  else
+    fail "Unsupported data bag type #{new_resource.data_bag_type}"
+  end
 
   next if ssl_item.nil?
 

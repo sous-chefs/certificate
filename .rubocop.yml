@@ -9,3 +9,7 @@ Style/RescueModifier:
 AllCops:
   Exclude:
   - '.kitchen/*'
+Documentation:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false

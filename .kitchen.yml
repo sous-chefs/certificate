@@ -33,3 +33,6 @@ suites:
         key_file: "test.key"
       }
     ]
+- name: custom
+  run_list: recipe[certificate::custom]
+

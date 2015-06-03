@@ -28,3 +28,13 @@ node['certificate'].each do |cert|
     end
   end
 end
+
+# node['certificate'].each do |cert|
+#   cert.each_pair do |id, opts|
+#     Chef::Log.debug "Create certs #{id} from attribute"
+#     certificate_manage id do
+#       action :remove
+#       opts.each { |k, v| __send__(k, v) if self.respond_to?(k) } unless opts.nil?
+#     end
+#   end
+# end

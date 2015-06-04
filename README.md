@@ -145,6 +145,18 @@ Set ID and LWRP attributes to node attribute following...
       },
     ]
 
+### custom_by_attributes  
+
+Set the following node attributes... 
+
+    node['certificate']['cert_file']
+    node['certificate']['key_file']
+    node['certificate']['chain_file']
+    node['certificate']['cert_file_source']
+    node['certificate']['key_file_source']
+    node['certificate']['chain_file_source']
+
+
 
 Resources/Providers
 -------------------
@@ -155,7 +167,7 @@ The LWRP resource attributes are as follows.
 
   * `data_bag` - Data bag index to search, defaults to certificates
   * `data_bag_secret` - Path to the file with the data bag secret
-  * `data_bag_type` - encrypted, unencrypted, vault
+  * `data_bag_type` - encrypted, unencrypted, vault, custom
     - vault type data bags are not supported with chef-solo
   * `search_id` - Data bag id to search for, defaults to provider name
   * `cert_path` - Top-level SSL directory, defaults to vendor specific location
@@ -190,6 +202,23 @@ certificate_manage "mail" do
   group "postfix"
 end
 ```
+
+Here is an example using custom data_bag type. This allows you to use your own data bag structure for certs making it easier to use with exsting data bag solutions. Node attributes or data bag can be used. 
+
+The below will retrieve cert, key and chain from data bag `custom_data_bag` and create. 
+
+```ruby
+certificate_manage "custom_cert" do
+  cert_file 'custom_test.pem'
+  key_file 'custom_test.key'
+  chain_file 'custom_test_bundle.crt'
+  cert_file_source custom_data_bag['cert_file_source]
+  key_file_source custom_data_bag['key_file_source]
+  chain_file_source custom_data_bag['chain_file_source]
+  data_bag_type 'custom'
+end
+```  
+
 
 ##### .certificate, .key, .chain helper method usage
 

@@ -34,7 +34,7 @@ suites:
       }
     ]
 - name: custom
-  run_list: ["recipe[certificate::custom]"]
+  run_list: ["recipe[certificate::custom_by_attributes]"]
   attributes:
     certificate: 
       cert_file: 'custom_test.pem'

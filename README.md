@@ -198,9 +198,9 @@ certificate_manage "custom_cert" do
   cert_file 'custom_test.pem'
   key_file 'custom_test.key'
   chain_file 'custom_test_bundle.crt'
-  cert_file_source custom_data_bag['cert_file_source]
-  key_file_source custom_data_bag['key_file_source]
-  chain_file_source custom_data_bag['chain_file_source]
+  cert_file_source custom_data_bag['cert_file_source']
+  key_file_source custom_data_bag['key_file_source']
+  chain_file_source custom_data_bag['chain_file_source']
   data_bag_type 'custom'
 end
 ```  
@@ -210,9 +210,9 @@ certificate_manage "custom_cert" do
   cert_file 'custom_test.pem'
   key_file 'custom_test.key'
   chain_file 'custom_test_bundle.crt'
-  cert_file_source node['cert_file_source]
-  key_file_source node['key_file_source]
-  chain_file_source node['chain_file_source]
+  cert_file_source node['cert_file_source']
+  key_file_source node['key_file_source']
+  chain_file_source node['chain_file_source']
   data_bag_type 'custom'
 end
 ```

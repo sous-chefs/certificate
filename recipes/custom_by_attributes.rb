@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: certificate
-# Recipe::manage_by_attributes
+# Recipe::custom_by_attributes
 #
 # Copyright 2012, Eric G. Wolfe
 #
@@ -19,12 +19,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-node['certificate'].each do |cert|
-  cert.each_pair do |id, opts|
-    Chef::Log.debug "Create certs #{id} from attribute"
-    certificate_manage id do
-      action :create
-      opts.each { |k, v| __send__(k, v) if self.respond_to?(k) } unless opts.nil?
-    end
-  end
+certificate_manage 'Install certificate' do
+  cert_file node['certificate']['cert_file']
+  key_file node['certificate']['key_file']
+  chain_file node['certificate']['chain_file']
+  cert_file_source node['certificate']['cert_file_source']
+  key_file_source node['certificate']['key_file_source']
+  chain_file_source node['certificate']['chain_file_source']
+  data_bag_type 'custom'
 end

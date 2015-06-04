@@ -145,6 +145,18 @@ Set ID and LWRP attributes to node attribute following...
       },
     ]
 
+### custom_by_attributes  
+
+Set the following node attributes... 
+
+    node['certificate']['cert_file']
+    node['certificate']['key_file']
+    node['certificate']['chain_file']
+    node['certificate']['cert_file_source']
+    node['certificate']['key_file_source']
+    node['certificate']['chain_file_source']
+
+
 
 Resources/Providers
 -------------------
@@ -191,7 +203,9 @@ certificate_manage "mail" do
 end
 ```
 
-Here are some examples using custom data_bag type. This allows you to use your own data bag structure for certs making it easier to use with exsting data bag solutions.
+Here is an example using custom data_bag type. This allows you to use your own data bag structure for certs making it easier to use with exsting data bag solutions. Node attributes or data bag can be used. 
+
+The below will retrieve cert, key and chain from data bag `custom_data_bag` and create. 
 
 ```ruby
 certificate_manage "custom_cert" do
@@ -204,18 +218,6 @@ certificate_manage "custom_cert" do
   data_bag_type 'custom'
 end
 ```  
-
-```ruby
-certificate_manage "custom_cert" do
-  cert_file 'custom_test.pem'
-  key_file 'custom_test.key'
-  chain_file 'custom_test_bundle.crt'
-  cert_file_source node['cert_file_source]
-  key_file_source node['key_file_source]
-  chain_file_source node['chain_file_source]
-  data_bag_type 'custom'
-end
-```
 
 
 ##### .certificate, .key, .chain helper method usage

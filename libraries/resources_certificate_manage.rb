@@ -41,15 +41,9 @@ class Chef
       attribute :create_subfolders, :kind_of => [TrueClass, FalseClass], :default => true
 
       # Custom attributes only
-      # :certificate is the certifcate file.
-      # :key is the key file.
-      # :chain is chain file.
       # :cert_file_source is the content of the certifcate file.
       # :key_file_source is the content of the key file.
       # :chain_file_source is the content of the chain file.
-      # attribute :certificate, :kind_of => String, :default => nil
-      # attribute :key, :kind_of => String, :default => nil
-      # attribute :chain, :kind_of => String, :default => nil
       attribute :cert_file_source, :kind_of => String, :default => nil
       attribute :key_file_source, :kind_of => String, :default => nil
       attribute :chain_file_source, :kind_of => String, :default => nil

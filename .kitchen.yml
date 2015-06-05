@@ -33,3 +33,13 @@ suites:
         key_file: "test.key"
       }
     ]
+- name: custom
+  run_list: ["recipe[certificate::custom_by_attributes]"]
+  attributes:
+    certificate:
+      cert_file: 'custom_test.pem'
+      key_file: 'custom_test.key'
+      chain_file: 'custom_test_bundle.crt'
+      cert_file_source: '-----BEGIN CERTIFICATE-----\ncertificate\n-----END CERTIFICATE-----'
+      key_file_source: '-----BEGIN KEY-----\nkey\n-----END KEY-----'
+      chain_file_source: '-----BEGIN CERTIFICATE-----\nca_certificate\n-----END CERTIFICATE-----'

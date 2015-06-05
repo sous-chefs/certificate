@@ -9,4 +9,7 @@ if defined?(ChefSpec)
   def create_certificate_manage(resource)
     ChefSpec::Matchers::ResourceMatcher.new(:certificate_manage, :create, resource)
   end
+    def remove_certificate_manage(resource)
+    ChefSpec::Matchers::ResourceMatcher.new(:certificate_manage, :remove, resource)
+  end
 end

@@ -42,6 +42,14 @@ action :create do
         raise e unless new_resource.ignore_missing
         nil
       end
+  when 'custom'
+    ssl_item =
+      begin
+        { 'cert' => new_resource.cert_source, 'chain' => new_resource.chain_source, 'key' => new_resource.key_source }
+      rescue => e
+        raise e unless new_resource.ignore_missing
+        nil
+      end
   when 'vault'
     # vault doesn't work in chef-solo
     Chef::Application.fatal!('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
@@ -85,6 +93,11 @@ action :create do
   cert_file_resource new_resource.key, ssl_item['key'], :private => true
 end
 
+action :remove do
+  delete_cert_file new_resource.certificate
+  delete_cert_file new_resource.key
+end
+
 def cert_directory_resource(dir, options = {})
   r = directory ::File.join(new_resource.cert_path, dir) do
     owner new_resource.owner
@@ -107,4 +120,12 @@ def cert_file_resource(path, content, options = {})
     sensitive new_resource.sensitive if respond_to?(:sensitive)
   end
   new_resource.updated_by_last_action(true) if r.updated_by_last_action?
+end
+
+def delete_cert_file(path)
+  file path do
+    action :delete
+    only_if { ::File.exist?(path) }
+  end
+  new_resource.updated_by_last_action(true) if new_resource.updated_by_last_action?
 end

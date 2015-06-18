@@ -6,6 +6,7 @@ platforms:
 - name: ubuntu-10.04
 - name: centos-6.6
 - name: centos-5.11
+- name: fedora-21
 
 suites:
 - name: default

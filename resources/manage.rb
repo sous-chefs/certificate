@@ -43,7 +43,7 @@ attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => fals
 # :cert_path is the top-level directory for certs/keys (certs and private sub-folders are where the files will be placed)
 # :create_subfolders will automatically create certs and private sub-folders
 case node['platform_family']
-when 'rhel'
+when 'rhel', 'fedora'
   attribute :cert_path, :kind_of => String, :default => '/etc/pki/tls'
 when 'debian'
   attribute :cert_path, :kind_of => String, :default => '/etc/ssl'

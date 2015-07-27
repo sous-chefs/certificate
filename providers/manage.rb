@@ -58,6 +58,12 @@ action :create do
           nil
         end
       end
+  when 'none' # just take arbitrary plain text from resource
+    ssl_item = {
+      'cert' => new_resource.plaintext_cert,
+      'key' => new_resource.plaintext_key,
+      'chain' => new_resource.plaintext_chain,
+      }
   else
     fail "Unsupported data bag type #{new_resource.data_bag_type}"
   end

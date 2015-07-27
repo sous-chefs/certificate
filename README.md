@@ -49,7 +49,7 @@ named *certificates*.  However, you may override this with the
 
 You need to convert your certificate, private keys, and CA bundles into
 single-line blobs with literal `\n` characters.  This is so it may be
-copy/pasted into your data bag. You can use `sed` or you can use a Perl 
+copy/pasted into your data bag. You can use `sed` or you can use a Perl
 or Ruby one-liner for this conversion.
 
     cat <filename> | sed s/$/\\\\n/ | tr -d '\n'
@@ -155,9 +155,13 @@ The LWRP resource attributes are as follows.
 
   * `data_bag` - Data bag index to search, defaults to certificates
   * `data_bag_secret` - Path to the file with the data bag secret
-  * `data_bag_type` - encrypted, unencrypted, vault
+  * `data_bag_type` - encrypted, unencrypted, vault, none
     - vault type data bags are not supported with chef-solo
+    - none type is used to provide values directly to the resource using plaintext_ parameters
   * `search_id` - Data bag id to search for, defaults to provider name
+  * `plaintext_cert`: for data_bag_type 'none', should be formatted just like a data bag item
+  * `plaintext_key`: for data_bag_type 'none', should be formatted just like a data bag item
+  * `plaintext_chain`: for data_bag_type 'none', should be formatted just like a data bag item
   * `cert_path` - Top-level SSL directory, defaults to vendor specific location
   * `cert_file` - The basename of the x509 certificate, defaults to {node.fqdn}.pem
   * `key_file` - The basename of the private key file, defaults to {node.fqdn}.key
@@ -221,6 +225,26 @@ certificate_manage "wildcard" do
   cert_file lazy { "#{node['fqdn']}.pem" }
   key_file lazy { "#{node['fqdn']}.key" }
   chain_file lazy { "#{node['fqdn']}-bundle.crt" }
+end
+```
+
+##### Using the 'none' data bag type, supplying plain text example:
+
+The 'none' option doesn't use a data bag at all, but allows you to pass the
+certificate, key, and/or chain as a string directly to the resource. This allows
+you to use the `certificate_manage` resource for all of your certificate needs,
+even if you happen to have the data stored in a different data bag location or
+in some other external storage that isn't supported.
+
+```ruby
+certificate_manage "fqdn-none-plaintext" do
+  cert_file lazy { "#{node['fqdn']}.pem" }
+  key_file lazy { "#{node['fqdn']}.key" }
+  chain_file lazy { "#{node['fqdn']}-bundle.crt" }
+  data_bag_type 'none'
+  plaintext_cert "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n\n"
+  plaintext_key "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----\n\n",
+  plaintext_chain "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n\n",
 end
 ```
 

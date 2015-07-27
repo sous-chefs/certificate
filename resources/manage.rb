@@ -31,9 +31,14 @@ actions :create
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => 'certificates'
 attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
-attribute :data_bag_type, :kind_of => String, :equal_to => ['unencrypted', 'encrypted', 'vault'], :default => 'encrypted'
+attribute :data_bag_type, :kind_of => String, :equal_to => ['unencrypted', 'encrypted', 'vault', 'none'], :default => 'encrypted'
 attribute :search_id, :kind_of => String, :name_attribute => true
 attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
+
+# When :data_bag_type is none, accept arbitrary plaintext for key, cert, chain
+attribute :plaintext_cert, :kind_of => String, :default => nil
+attribute :plaintext_key, :kind_of => String, :default => nil
+attribute :plaintext_chain, :kind_of => String, :default => nil
 
 # :nginx_cert is a PEM which combine host cert and CA trust chain for nginx.
 # :combined_file is a PEM which combine certs and keys in one file, for things such as haproxy.

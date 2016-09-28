@@ -19,15 +19,15 @@ platforms:
 # support vault on chef-solo.  Keeping this kitchen file
 # separate until there is some chef failure verifier
 suites:
-- name: vault
-  data_bag_path: "test/integration/vault/data_bags"
-  run_list: ["recipe[certificate::manage_by_attributes]"]
-  attributes:
-    certificate: [
-      test: {
-        data_bag_type: 'vault',
-        nginx_cert: true,
-        cert_file: "test.pem",
-        key_file: "test.key"
-      }
-    ]
+  - name: vault
+    data_bag_path: "test/integration/vault/data_bags"
+    run_list:
+      - recipe[certificate::manage_by_attributes]
+    attributes:
+      certificate:
+        test: {
+          data_bag_type: 'vault',
+          nginx_cert: true,
+          cert_file: "test.pem",
+          key_file: "test.key"
+        }

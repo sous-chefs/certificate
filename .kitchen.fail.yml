@@ -1,5 +1,7 @@
 ---
 driver_plugin: vagrant
+provisioner:
+  name: chef_zero
 
 platforms:
 - name: ubuntu-12.04

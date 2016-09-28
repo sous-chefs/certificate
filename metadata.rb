@@ -12,4 +12,4 @@ rescue
   '0.0.1'
 end
 
-depends 'chef-vault'
+depends 'chef-vault', '~> 2.0'

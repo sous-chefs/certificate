@@ -47,9 +47,8 @@ action :create do
     Chef::Application.fatal!('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
     ssl_item =
       begin
-        chef_gem 'chef-vault'
-        require 'chef-vault'
-        ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
+        include_recipe 'chef-vault'
+        chef_vault_item(new_resource.data_bag, new_resource.search_id)
       rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
         begin
           Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)

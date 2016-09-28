@@ -7,6 +7,8 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue '0.0.1'
 %w( amazon centos debian fedora redhat oracle scientific ubuntu smartos ).each do |os|
   supports os
+source_url 'https://github.com/atomic-penguin/cookbook-certificate.git'
+issues_url 'https://github.com/atomic-penguin/cookbook-certificate/issues'
 end
 
 depends 'chef-vault'

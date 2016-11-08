@@ -20,10 +20,11 @@
 def initialize(*args)
   super
   @action = :create
-  @sensitive = true
 end
 
 actions :create
+
+attribute :sensitive, :kind_of => [TrueClass, FalseClass], :default => true
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret

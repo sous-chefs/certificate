@@ -23,7 +23,7 @@ def initialize(*args)
   @sensitive = true
 end
 
-actions :create
+actions :create, :remove
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret
@@ -31,7 +31,7 @@ actions :create
 # :search_id is the Data Bag object you wish to search.
 attribute :data_bag, :kind_of => String, :default => 'certificates'
 attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
-attribute :data_bag_type, :kind_of => String, :equal_to => ['unencrypted', 'encrypted', 'vault'], :default => 'encrypted'
+attribute :data_bag_type, :kind_of => String, :equal_to => %w(unencrypted encrypted vault custom), :default => 'encrypted'
 attribute :search_id, :kind_of => String, :name_attribute => true
 attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
 
@@ -58,6 +58,14 @@ attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
 attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
 attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
 attribute :create_subfolders, :kind_of => [TrueClass, FalseClass], :default => true
+
+# Custom only attributes
+# :cert_file_source is the content of the certifcate file.
+# :key_file_source is the content of the key file.
+# :chain_file_source is the content of the chain file.
+attribute :cert_source, :kind_of => String, :default => nil
+attribute :key_source, :kind_of => String, :default => nil
+attribute :chain_source, :kind_of => String, :default => nil
 
 # The owner and group of the managed certificate and key
 attribute :owner, :kind_of => String, :default => 'root'

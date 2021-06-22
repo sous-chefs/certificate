@@ -2,7 +2,7 @@
 # Cookbook:: certificate
 # Provider:: manage
 #
-# Copyright 2012, Eric G. Wolfe
+# Copyright:: 2012, Eric G. Wolfe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +17,13 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
-use_inline_resources if defined?(use_inline_resources)
-
 action :create do
   case new_resource.data_bag_type
   when 'encrypted'
     ssl_secret = Chef::EncryptedDataBagItem.load_secret(new_resource.data_bag_secret)
     ssl_item =
       begin
-        Chef::EncryptedDataBagItem.load(new_resource.data_bag, new_resource.search_id, ssl_secret)
+        data_bag_item(new_resource.data_bag, new_resource.search_id, ssl_secret)
       rescue => e
         raise e unless new_resource.ignore_missing
         nil
@@ -37,14 +31,14 @@ action :create do
   when 'unencrypted'
     ssl_item =
       begin
-        Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)
+        data_bag_item(new_resource.data_bag, new_resource.search_id)
       rescue => e
         raise e unless new_resource.ignore_missing
         nil
       end
   when 'vault'
     # vault doesn't work in chef-solo
-    Chef::Application.fatal!('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
+    raise('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
     ssl_item =
       begin
         chef_gem 'chef-vault'
@@ -52,7 +46,7 @@ action :create do
         ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
       rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
         begin
-          Chef::DataBagItem.load(new_resource.data_bag, new_resource.search_id)
+          data_bag_item(new_resource.data_bag, new_resource.search_id)
         rescue => e
           raise e unless new_resource.ignore_missing
           nil
@@ -65,7 +59,7 @@ action :create do
       'chain' => new_resource.plaintext_chain,
       }
   else
-    fail "Unsupported data bag type #{new_resource.data_bag_type}"
+    raise "Unsupported data bag type #{new_resource.data_bag_type}"
   end
 
   next if ssl_item.nil?
@@ -73,13 +67,13 @@ action :create do
   if new_resource.combined_file
     cert_file_resource ::File.join(new_resource.cert_path, new_resource.cert_file),
                        "#{ssl_item['cert']}\n#{ssl_item['chain']}\n#{ssl_item['key']}",
-                       :private => true
+                       private: true
     next
   end
 
   if new_resource.create_subfolders
     cert_directory_resource 'certs'
-    cert_directory_resource 'private', :private => true
+    cert_directory_resource 'private', private: true
   end
 
   if new_resource.nginx_cert
@@ -88,7 +82,7 @@ action :create do
     cert_file_resource new_resource.certificate, ssl_item['cert']
     cert_file_resource new_resource.chain, ssl_item['chain']
   end
-  cert_file_resource new_resource.key, ssl_item['key'], :private => true
+  cert_file_resource new_resource.key, ssl_item['key'], private: true
 end
 
 def cert_directory_resource(dir, options = {})
@@ -108,7 +102,7 @@ def cert_file_resource(path, content, options = {})
     owner new_resource.owner
     group new_resource.group
     mode(options[:private] ? 00640 : 00644)
-    variables :file_content => content
+    variables file_content: content
     only_if { content }
     sensitive new_resource.sensitive if respond_to?(:sensitive)
   end

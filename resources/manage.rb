@@ -2,7 +2,7 @@
 # Cookbook:: certificate
 # Resources:: manage
 #
-# Copyright 2012, Eric G. Wolfe
+# Copyright:: 2012, Eric G. Wolfe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 # limitations under the License.
 #
 
+unified_mode true
+
+default_action :create
+
 def initialize(*args)
   super
-  @action = :create
   @sensitive = true
 end
 
@@ -29,16 +32,16 @@ actions :create
 # :data_bag_secret is the path to the file with the data bag secret
 # :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
 # :search_id is the Data Bag object you wish to search.
-attribute :data_bag, :kind_of => String, :default => 'certificates'
-attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
-attribute :data_bag_type, :kind_of => String, :equal_to => ['unencrypted', 'encrypted', 'vault', 'none'], :default => 'encrypted'
-attribute :search_id, :kind_of => String, :name_attribute => true
-attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :data_bag, kind_of: String, default: 'certificates'
+attribute :data_bag_secret, kind_of: String, default: Chef::Config['encrypted_data_bag_secret']
+attribute :data_bag_type, kind_of: String, equal_to: %w(unencrypted encrypted vault none), default: 'encrypted'
+attribute :search_id, kind_of: String, name_attribute: true
+attribute :ignore_missing, kind_of: [TrueClass, FalseClass], default: false
 
 # When :data_bag_type is none, accept arbitrary plaintext for key, cert, chain
-attribute :plaintext_cert, :kind_of => String, :default => nil
-attribute :plaintext_key, :kind_of => String, :default => nil
-attribute :plaintext_chain, :kind_of => String, :default => nil
+attribute :plaintext_cert, kind_of: String, default: nil
+attribute :plaintext_key, kind_of: String, default: nil
+attribute :plaintext_chain, kind_of: String, default: nil
 
 # :nginx_cert is a PEM which combine host cert and CA trust chain for nginx.
 # :combined_file is a PEM which combine certs and keys in one file, for things such as haproxy.
@@ -49,27 +52,27 @@ attribute :plaintext_chain, :kind_of => String, :default => nil
 # :create_subfolders will automatically create certs and private sub-folders
 case node['platform_family']
 when 'rhel', 'fedora'
-  attribute :cert_path, :kind_of => String, :default => '/etc/pki/tls'
+  attribute :cert_path, kind_of: String, default: '/etc/pki/tls'
 when 'debian'
-  attribute :cert_path, :kind_of => String, :default => '/etc/ssl'
+  attribute :cert_path, kind_of: String, default: '/etc/ssl'
 when 'smartos'
-  attribute :cert_path, :kind_of => String, :default => '/opt/local/etc/openssl'
+  attribute :cert_path, kind_of: String, default: '/opt/local/etc/openssl'
 else
-  attribute :cert_path, :kind_of => String, :default => '/etc/ssl'
+  attribute :cert_path, kind_of: String, default: '/etc/ssl'
 end
-attribute :nginx_cert, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :combined_file, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
-attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
-attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
-attribute :create_subfolders, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :nginx_cert, kind_of: [TrueClass, FalseClass], default: false
+attribute :combined_file, kind_of: [TrueClass, FalseClass], default: false
+attribute :cert_file, kind_of: String, default: "#{node['fqdn']}.pem"
+attribute :key_file, kind_of: String, default: "#{node['fqdn']}.key"
+attribute :chain_file, kind_of: String, default: "#{node['hostname']}-bundle.crt"
+attribute :create_subfolders, kind_of: [TrueClass, FalseClass], default: true
 
 # The owner and group of the managed certificate and key
-attribute :owner, :kind_of => String, :default => 'root'
-attribute :group, :kind_of => String, :default => 'root'
+attribute :owner, kind_of: String, default: 'root'
+attribute :group, kind_of: String, default: 'root'
 
 # Cookbook to search for blank.erb template
-attribute :cookbook, :kind_of => String, :default => 'certificate'
+attribute :cookbook, kind_of: String, default: 'certificate'
 
 # Accesors for determining where files should be placed
 def certificate

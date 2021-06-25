@@ -11,3 +11,6 @@ module Certificate
     end
   end
 end
+
+Chef::DSL::Recipe.include ::Certificate::Cookbook::Helpers
+Chef::Resource.include ::Certificate::Cookbook::Helpers

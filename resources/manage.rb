@@ -102,14 +102,19 @@ action :create do
                 # vault doesn't work in chef-solo
                 raise('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
 
-                chef_vault_item(new_resource.data_bag, new_resource.search_id)
+                begin
+                  chef_vault_item(new_resource.data_bag, new_resource.search_id)
+                rescue => e
+                  raise e unless new_resource.ignore_missing
+                  nil
+                end
 
               when 'none' # just take arbitrary plain text from resource properties
                 {
                   'cert' => new_resource.plaintext_cert,
                   'key' => new_resource.plaintext_key,
                   'chain' => new_resource.plaintext_chain,
-                  }
+                }
 
               else
                 raise "Unsupported data bag type #{new_resource.data_bag_type}"

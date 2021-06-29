@@ -20,5 +20,3 @@ supports 'redhat'
 supports 'scientific'
 supports 'suse'
 supports 'ubuntu'
-
-depends 'chef-vault'

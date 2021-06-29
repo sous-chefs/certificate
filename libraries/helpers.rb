@@ -8,6 +8,14 @@ module Certificate
           '/etc/ssl'
         end
       end
+
+      def chef_vault_item(bag, id)
+        if ChefVault::Item.vault?(bag, id)
+          ChefVault::Item.load(bag, id)
+        else
+          data_bag_item(bag, id)
+        end
+      end
     end
   end
 end

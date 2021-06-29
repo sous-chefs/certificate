@@ -104,18 +104,7 @@ action :create do
                 # vault doesn't work in chef-solo
                 raise('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
 
-                begin
-                  chef_gem 'chef-vault'
-                  require 'chef-vault'
-                  ChefVault::Item.load(new_resource.data_bag, new_resource.search_id)
-                rescue ChefVault::Exceptions::KeysNotFound, ChefVault::Exceptions::SecretDecryption
-                  begin
-                    data_bag_item(new_resource.data_bag, new_resource.search_id)
-                  rescue => e
-                    raise e unless new_resource.ignore_missing
-                    nil
-                  end
-                end
+                chef_vault_item(new_resource.data_bag, new_resource.search_id)
 
               when 'none' # just take arbitrary plain text from resource properties
                 {

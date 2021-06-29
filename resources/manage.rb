@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-provides :certificate_manage
-resource_name :certificate_manage
 unified_mode true
 
 default_action :create
@@ -28,7 +26,7 @@ default_action :create
 # :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
 # :search_id is the Data Bag object you wish to search.
 property :data_bag, String, default: 'certificates'
-property :data_bag_secret, String, default: Chef::Config['encrypted_data_bag_secret']
+property :data_bag_secret, [String, nil], default: Chef::Config['encrypted_data_bag_secret']
 property :data_bag_type, String, equal_to: %w(unencrypted encrypted vault none), default: 'encrypted'
 property :search_id, String, name_property: true
 property :ignore_missing, [true, false], default: false

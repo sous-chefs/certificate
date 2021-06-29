@@ -8,55 +8,31 @@
 
 ## Description
 
-This recipe automates the common task of managing x509 certificates and keys from encrypted Data Bags.  This cookbook
-provides a flexible and re-usable LWRP which can be plugged into other recipes, such as the postfix or apache2
-cookbooks.
+This recipe automates the common task of managing x509 certificates and keys from encrypted Data Bags. This cookbook
+provides a flexible and reusable resource to set up certificates from various sources.
 
 ### Warning about Vault mode
 
-Vault mode is not supported in chef-solo, and will result in a failure condition.  One needs to select either encrypted,
-or unencrypted, `data_bag_type` for use with chef-solo.
+Pulling data from Chef Vault is not supported when using `chef-solo`, and will result in a failure condition.
 
 ### Testing with encrypted data_bags
 
-The KITCHEN.md is a reference document for testing encrypted data_bags with test-kitchen. The stub files
-in`test/integration` are used to validate the `certificate_manage` library. These stub files in `test/integration`
-should not be used in production.  These files include self-signed "snake oil" certificate/key and an
-`encrypted_data_bag_secret` file which are not secure to use beyond testing.
+The stub files in `test/integration` are for testing only and should not be used in production. These files include a
+self-signed "snake oil" certificate/key and an `encrypted_data_bag_secret` file which are not secure to use beyond
+testing.
 
 ## Requirements
 
-You do need to prepare an encrypted data bag, containing the certificates, private keys, and CA bundles you wish to
-deploy to servers with the LWRP. I used Joshua Timberman's [blog
-post](http://jtimberman.housepub.org/blog/2011/08/06/encrypted-data-bag-for-postfix-sasl-authentication/), and the
-Opscode [Wiki documentation](https://wiki.opscode.com/display/chef10/Encrypted+Data+Bags) as a reference in creating
-this cookbook.
+### Prepping certificate data
 
-First, create a **data bag secret** as follows.  You need to manually copy the *encrypted_data_bag_secret* to
--/etc/chef* on your servers, or place it there as part of your bootstrap process.  For example, you may choose to do
-deploy the secret file with kickstart or preseed as part of the OS install process.
+The certificate strings in the data bag need all newlines replaced with literal `\n`s. This conversion can be done with
+a Ruby one-liner:
 
 ```console
-openssl rand -base64 512 > ~/.chef/encrypted_data_bag_secret
-```
-
-Second, create a data bag, the default data bag within the LWRP is named *certificates*.  However, you may override this
-with the *data_bag* LWRP attribute.
-
-```console
-knife data bag create certificates
-```
-
-You need to convert your certificate, private keys, and CA bundles into single-line blobs with literal `\n` characters.
-This is so it may be copy/pasted into your data bag. You can use `sed`, Perl, Ruby one-liners for this conversion.
-
-```console
-cat <filename> | sed s/$/\\\\n/ | tr -d '\n'
 ruby -e 'p ARGF.read' <filename>
-perl -pe 's!(\x0d)?\x0a!\\n!g' <filename>
 ```
 
-What we're trying to accomplish is converting this:
+This will turn the input file from the normal certificate format:
 
 ```
 -----BEGIN CERTIFICATE-----
@@ -70,113 +46,107 @@ Into this:
 -----BEGIN CERTIFICATE-----\nMIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD\n-----END CERTIFICATE-----
 ```
 
-Finally, you'll want to create the data bag object to contain your certs, keys, and optionally your CA root chain
-bundle.  The default recipe uses the OHAI attribute *hostname* as a *search_id*.  One can use an *fqdn* as the
--search_id*. Older versions of Knife have a strict character filter list which prevents the use of `.` separators in
-data bag IDs.
-
-The cookbook also contains an example *wildcard* recipe to use with wildcard certificates (\*.example.com) certificates.
-
-Hostname mail as data bag search_id:
-
-```console
-knife data bag create certificates mail --secret-file ~/.chef/encrypted_data_bag_secret
-```
-
-The resulting encrypted data bag for a hostname should be structured like so. The *chain* id may be optional if your
-CA's root chain is already trusted by the server.
+Add the converted certificate / chain / key to the desired databag, attributes, or Chef Vault store:
 
 ```json
 {
-  "id": "mail",
-  "cert": "-----BEGIN CERTIFICATE-----\nMail Certificate Here...",
-  "key": "-----BEGIN PRIVATE KEY\nMail Private Key Here...",
+  "id": "example",
+  "cert": "-----BEGIN CERTIFICATE-----\nCertificate Here...",
+  "key": "-----BEGIN PRIVATE KEY\nPrivate Key Here...",
   "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
 }
 ```
 
-Wildcard certificate as data bag search_id:
-
-```conosle
-knife data bag create certificates wildcard --secret-file ~/.chef/encrypted_data_bag_secret
-```
-
-The resulting encrypted data bag should be structured like so for a wildcard certificate.  The *chain* id may be
-optional if your CA's root chain is already trusted by the server.
-
-```json
-{
-  "id": "wildcard",
-  "cert": "-----BEGIN CERTIFICATE-----\nWildcard Certificate Here...",
-  "key": "-----BEGIN PRIVATE KEY\nWildcard Private Key Here...",
-  "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
-}
-```
+The `chain` entry may be optional if the CA's root chain is already trusted by the server.
 
 ## Recipes
 
 This cookbook comes with three simple example recipes for using the *certificate_manage* LWRP.
 
-### default
+### `certificate::default`
 
-Searches the data bag, *certificates*, for an object with an *id* matching *node.hostname*.  Then the recipe places the
-decrypted certificates and keys in either */etc/pki/tls* (RHEL family), or */etc/ssl* (Debian family).  The default
-owner and group owner of the resulting files are *root*.
+Creates certificates from the data bag item `certificates/$HOSTNAME`.
 
-The resulting files will be named {node.fqdn}.pem (cert), {node.fqdn}.key (key), and {node.hostname}-bundle.crt (CA Root
-chain).
+### `certificate::wildcard`
 
-### wildcard
+Same as the default recipe, except for the data bag item name is `wildcard` instead of the node hostname.
 
-Same as the default recipe, except for the search *id* is *wildcard*. The resulting files will be named wildcard.pem
-(cert), wildcard.key (key), and wildcard-bundle.crt (CA Root chain)
+The resulting files will be named wildcard.pem (cert), wildcard.key (key), and wildcard-bundle.crt (CA Root chain)
 
-### manage_by_attributes
+### `certificate::manage_by_attributes`
 
-Retrieve search keys from attributes "certificate". Set ID and LWRP attributes to node attribute following...
+Defines `certificate_manage` resources dynamically from node attributes.
 
-```json
-"certificate": [
-  {"self": null},
-  {"mail": {
-    "cert_path": "/etc/postfix/ssl",
-      "owner": "postfix",
-      "group": "postfix"
+<!-- use raw html table for multi line code blocks -->
+<table>
+<tr>
+<td> Attributes </td> <td> Equivalent resources </td>
+</tr>
+<tr>
+<td>
+
+```ruby
+node['certificate'] = [
+  {
+    'foo' => {
+      data_bag_type: 'none',
+      plaintext_cert: 'plain_cert',
+      plaintext_key: 'plain_key',
+      plaintext_chain: 'plain_chain',
     }
   },
+  {'test' => {}},
 ]
 ```
 
+</td>
+<td>
+
+```ruby
+certificate_manage 'foo' do
+  data_bag_type 'none'
+  plaintext_cert 'plain_cert'
+  plaintext_key 'plain_key'
+  plaintext_chain 'plain_chain'
+end
+
+certificate_manage 'test'
+```
+
+</td>
+</tr>
+</table>
+
 ## Resources
 
-The resource properties are as follows:
+### `certificate_manage`
 
-- `data_bag` - Data bag index to search, defaults to certificates
-- `data_bag_secret` - Path to the file with the data bag secret
-- `data_bag_type` - encrypted, unencrypted, vault, none
-  - vault type data bags are not supported with chef-solo
-  - none type is used to provide values directly to the resource using plaintext_ parameters
-- `search_id` - Data bag id to search for, defaults to provider name
-- `plaintext_cert`: for data_bag_type 'none', should be formatted just like a data bag item
-- `plaintext_key`: for data_bag_type 'none', should be formatted just like a data bag item
-- `plaintext_chain`: for data_bag_type 'none', should be formatted just like a data bag item
-- `cert_path` - Top-level SSL directory, defaults to vendor specific location
-- `cert_file` - The basename of the x509 certificate, defaults to {node.fqdn}.pem
-- `key_file` - The basename of the private key file, defaults to {node.fqdn}.key
-- `chain_file` - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
-- `nginx_cert` - If `true`, combines server and CA certificates for nginx. Default `false`
-- `combined_file` - If `true`, combines server cert, CA cert and private key into a single file. Default `false`
-- `owner` - The file owner, defaults to root
-- `group` - The file group owner, defaults to root
-- `cookbook` - The cookbook containing the erb template, defaults to certificate
-- `create_subfolders` - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
+Sets up certificates from data bags or Chef Vault stores.
 
-## Usage
+| Property            | Default                                     | Description                                                                                                                           |
+|---------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `data_bag`          | `certificate`                               | Name of the data bag to look in                                                                                                       |
+| `data_bag_secret`   | `Chef::Config['encrypted_data_bag_secret']` | Path to the file with the data bag secret                                                                                             |
+| `data_bag_type`     | `encrypted`                                 | Where to get certificate data from: `encrypted` or `unencrypted` data bag, `vault` for Chef Vault, or `none` for plaintext properties |
+| `search_id`         | Resource name                               | Name of the data bag item to use                                                                                                      |
+| `plaintext_cert`    |                                             | Manual cert input for `none` data bag type                                                                                            |
+| `plaintext_key`     |                                             | Manual key input for `none` data bag type                                                                                             |
+| `plaintext_chain`   |                                             | Manual chain input for `none` data bag type                                                                                           |
+| `cert_path`         | `/etc/pki/tls` on RHEL, else `/etc/ssl`     | Directory to place certificates in                                                                                                    |
+| `create_subfolders` | `true`                                      | Whether to use `private/` and `certs/` subdirectories under `cert_path`                                                               |
+| `cert_file`         | `$FQDN.pem`                                 | Basename of the certificate                                                                                                           |
+| `key_file`          | `$FQDN.key`                                 | Basename of the private key                                                                                                           |
+| `chain_file`        | `$HOSTNAME-bundle.pem`                      | Basename of the chain certificate                                                                                                     |
+| `nginx_cert`        | `false`                                     | Whether to create a combined cert/chain certificate for use with Nginx instead of separate certs                                      |
+| `combined_file`     | `false`                                     | Whether to combine the cert, chain, and key into a single file                                                                        |
+| `owner`             | `root`                                      | File owner of the certificates                                                                                                        |
+| `group`             | `root`                                      | File group of the certificates                                                                                                        |
+| `cookbook`          | `certificate`                               | Cookbook containing the certificate file template.                                                                                    |
 
-Here is a flushed out example using the LWRP to manage your certificate items on a Postfix bridgehead.  The following
-example should select the *mail* data bag object, from the *certificates* data bag.
+### Example
 
-It should then place the managed certificate files in */etc/postfix/ssl*, and change the owner/group to *postfix*.
+The following example will place certificates defined in the `certificates/mail` data bag item under `/etc/postfix/ssl`
+owned by postfix.
 
 ```ruby
 certificate_manage "mail" do
@@ -209,9 +179,9 @@ sbd_cert_location = sbd.key # => /bobs/emporium/sub.example.com.key
 
 ### Setting FQDN during the converge
 
-If you are updating the FQDN of the node during converge, be sure to use [lazy attribute
-evaluation](https://docs.chef.io/resource_common.html#lazy-attribute-evaluation) when using the LWRP to ensure
-`node['fqdn']` refers to the updated value.
+If the FQDN of the node is updated during converge, be sure to use [lazy attribute
+evaluation](https://docs.chef.io/resource_common.html#lazy-attribute-evaluation) to ensure `node['fqdn']` refers to the
+updated value.
 
 ```ruby
 certificate_manage "wildcard" do
@@ -221,12 +191,11 @@ certificate_manage "wildcard" do
 end
 ```
 
-### Using the 'none' data bag type, supplying plain text example
+### Using the `none` data bag type
 
-The 'none' option doesn't use a data bag at all, but allows you to pass the certificate, key, and/or chain as a string
-directly to the resource. This allows you to use the `certificate_manage` resource for all of your certificate needs,
-even if you happen to have the data stored in a different data bag location or in some other external storage that isn't
-supported.
+The `none` option does not use a data bag, requiring the certificate, key, and/or chain to be passed directly to the
+resource. This allows you to use the `certificate_manage` resource for all of your certificate needs, even if the
+certificate data is stored in an unsupported location.
 
 ```ruby
 certificate_manage "fqdn-none-plaintext" do

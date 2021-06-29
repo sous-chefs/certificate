@@ -26,7 +26,7 @@ control 'cerificate' do
 
   describe file("#{cert_path}/certs/test.pem") do
     it { should exist }
-    its('mode') { should cmp '0644' }
+    its('mode') { should cmp '0640' }
     its('content') { should match /BEGIN CERTIFICATE/ }
   end
 
@@ -34,5 +34,3 @@ control 'cerificate' do
     its('exit_status') { should eq 0 }
   end
 end
-
-# /etc/pki/tls || /etc/ssl

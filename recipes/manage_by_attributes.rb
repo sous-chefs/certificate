@@ -24,7 +24,6 @@ node['certificate'].each do |cert|
     Chef::Log.debug "Create certs #{id} from attribute"
 
     certificate_manage id do
-      action :create
       opts.each { |k, v| __send__(k, v) if respond_to?(k) } unless opts.nil?
     end
   end

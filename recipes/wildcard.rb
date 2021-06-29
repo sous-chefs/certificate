@@ -21,5 +21,4 @@ certificate_manage 'wildcard' do
   cert_file 'wildcard.pem'
   key_file 'wildcard.key'
   chain_file 'wildcard-bundle.crt'
-  action :create
 end

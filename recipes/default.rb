@@ -18,6 +18,5 @@
 #
 
 certificate_manage node['hostname'] do
-  action :create
   ignore_missing true
 end

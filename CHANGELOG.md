@@ -6,24 +6,26 @@ This file is used to list changes made in each version of the certificate cookbo
 
 - Sous Chefs Adoption
 
-## 1.0.0 (2015-04-03)
+## 1.0.0 - 2015-04-03
 
-- #45 @dmlb2000 added `data_bag_type` parameter and support for ## ault, or unencrypted modes Update documentation for helper methods.
+- #45 @dmlb2000 added `data_bag_type` parameter and support for vault, or unencrypted modes.
+- Update documentation for helper methods.
 
-## 0.8.2 (2015-03-02)
+## 0.8.2 - 2015-03-02
 
-- #43 @hartfordfi## e added sensitive mode to hide certificates and keys in console output. #47 @fletchowns added documentation note concerning lazy attribute evaluation.
+- #43 @hartfordfi## e added sensitive mode to hide certificates and keys in console output.
+- #47 @fletchowns added documentation note concerning lazy attribute evaluation.
 
-## 0.8.1 (2015-02-05)
+## 0.8.1 - 2015-02-05
 
 - Fix bad pick on merge conflict from revert.
 
-## 0.8.0 (2015-02-04)
+## 0.8.0 - 2015-02-04
 
-- Revert #38: This previous change worked around a bug in Knife that limited use of characters in data bags.  See
+- Revert #38: This previous change worked around a bug in Knife that limited use of characters in data bags. See
   [CHEF-3531](https://github.com/chef/chef/pull/1104) for more information.
 
-## 0.7.0 (2015-01-23)
+## 0.7.0 - 2015-01-23
 
 - #33 expose final path of managed objects.
 - #38 normalize dots to underscore in search_id

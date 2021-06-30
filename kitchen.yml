@@ -8,6 +8,7 @@ provisioner:
   enforce_idempotency: true
   multiple_converge: 2
   deprecations_as_errors: true
+  data_bags_path: test/integration/data_bags
 
 verifier:
   name: inspec
@@ -23,24 +24,9 @@ platforms:
   - name: ubuntu-20.04
 
 suites:
-  - name: default
-    run_list:
-      - recipe[certificate::manage_by_attributes]
-    provisioner:
-      data_bag_path: test/integration/default/data_bags
-      encrypted_data_bag_secret_key_path: test/integration/default/encrypted_data_bag_secret
-    attributes:
-      certificate:
-        - test:
-            data_bag_type: encrypted
-            cert_file: test.pem
-            key_file: test.key
-            chain_file: test-chain.pem
   - name: unencrypted
     run_list:
       - recipe[certificate::manage_by_attributes]
-    provisioner:
-      data_bag_path: test/integration/unencrypted/data_bags
     attributes:
       certificate:
         - test:
@@ -64,8 +50,6 @@ suites:
   - name: vault
     run_list:
       - recipe[certificate::manage_by_attributes]
-    provisioner:
-      data_bag_path: test/integration/vault/data_bags
     attributes:
       certificate:
         - test:

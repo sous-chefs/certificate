@@ -1,191 +1,152 @@
-Certificate cookbook
-====================
+# Certificate cookbook
 
-[![Build Status](https://secure.travis-ci.org/atomic-penguin/cookbook-certificate.png?branch=master)](http://travis-ci.org/atomic-penguin/cookbook-certificate)
+[![Cookbook Version](https://img.shields.io/cookbook/v/rsync.svg)](https://supermarket.chef.io/cookbooks/certificate)
+[![CI State](https://github.com/sous-chefs/rsync/workflows/ci/badge.svg)](https://github.com/sous-chefs/certificate/actions?query=workflow%3Aci)
+[![OpenCollective](https://opencollective.com/sous-chefs/backers/badge.svg)](#backers)
+[![OpenCollective](https://opencollective.com/sous-chefs/sponsors/badge.svg)](#sponsors)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Description
------------
+## Description
 
-This recipe automates the common task of managing x509 certificates and keys
-from encrypted Data Bags.  This cookbook provides a flexible and re-usable
-LWRP which can be plugged into other recipes, such as the postfix or apache2
-cookbooks.
+This recipe automates the common task of managing x509 certificates and keys from encrypted Data Bags. This cookbook
+provides a flexible and reusable resource to set up certificates from various sources.
 
-#### Warning about Vault mode
+### Warning about Vault mode
 
-Vault mode is not supported in chef-solo, and will result in a failure condition.  One needs
-to select either encrypted, or unencrypted, `data_bag_type` for use with chef-solo.
+Pulling data from Chef Vault is not supported when using `chef-solo`, and will result in a failure condition.
 
-#### Testing with encrypted data_bags
+### Testing with encrypted data_bags
 
-The KITCHEN.md is a reference document for testing encrypted data_bags with test-kitchen.
-The stub files in`test/integration` are used to validate the `certificate_manage` library.
-These stub files in `test/integration` should not be used in production.  These files include
-self-signed "snake oil" certificate/key and an `encrypted_data_bag_secret` file
-which are not secure to use beyond testing.
+The stub files in `test/integration` are for testing only and should not be used in production. These files include a
+self-signed "snake oil" certificate/key and an `encrypted_data_bag_secret` file which are not secure to use beyond
+testing.
 
-Requirements
-------------
+## Requirements
 
-You do need to prepare an encrypted data bag, containing the certificates,
-private keys, and CA bundles you wish to deploy to servers with the LWRP.
-I used Joshua Timberman's [blog post](http://jtimberman.housepub.org/blog/2011/08/06/encrypted-data-bag-for-postfix-sasl-authentication/),
-and the Opscode [Wiki documentation](https://wiki.opscode.com/display/chef10/Encrypted+Data+Bags)
-as a reference in creating this cookbook.
+### Prepping certificate data
 
-First, create a **data bag secret** as follows.  You need to manually copy
-the *encrypted_data_bag_secret* to */etc/chef* on your servers, or place it
-there as part of your bootstrap process.  For example, you may choose to
-do deploy the secret file with kickstart or preseed as part of the OS
-install process.
+The certificate strings in the data bag need all newlines replaced with literal `\n`s. This conversion can be done with
+a Ruby one-liner:
 
-    openssl rand -base64 512 > ~/.chef/encrypted_data_bag_secret
+```console
+ruby -e 'p ARGF.read' <filename>
+```
 
-Second, create a data bag, the default data bag within the LWRP is
-named *certificates*.  However, you may override this with the
-*data_bag* LWRP attribute.
+This will turn the input file from the normal certificate format:
 
-    knife data bag create certificates
-
-You need to convert your certificate, private keys, and CA bundles into
-single-line blobs with literal `\n` characters.  This is so it may be
-copy/pasted into your data bag. You can use `sed` or you can use a Perl
-or Ruby one-liner for this conversion.
-
-    cat <filename> | sed s/$/\\\\n/ | tr -d '\n'
-    -OR-
-    /usr/bin/env ruby -e 'p ARGF.read' <filename>
-    -OR-
-    perl -pe 's!(\x0d)?\x0a!\\n!g' <filename>
-
-What we're trying to accomplish is converting this:
-
-    -----BEGIN CERTIFICATE-----
-    MIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD
-    -----END CERTIFICATE-----
+```
+-----BEGIN CERTIFICATE-----
+MIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD
+-----END CERTIFICATE-----
+```
 
 Into this:
 
-    -----BEGIN CERTIFICATE-----\nMIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD\n-----END CERTIFICATE-----
+```
+-----BEGIN CERTIFICATE-----\nMIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD\n-----END CERTIFICATE-----
+```
 
-Finally, you'll want to create the data bag object to contain your certs,
-keys, and optionally your CA root chain bundle.  The default recipe uses
-the OHAI attribute *hostname* as a *search_id*.  One can use an *fqdn* as the *search_id*.
-Older versions of Knife have a strict character filter list which prevents the use of `.`
-separators in data bag IDs.
+Add the converted certificate / chain / key to the desired databag, attributes, or Chef Vault store:
 
-The cookbook also contains an example *wildcard* recipe to use with wildcard
-certificates (\*.example.com) certificates.
+```json
+{
+  "id": "example",
+  "cert": "-----BEGIN CERTIFICATE-----\nCertificate Here...",
+  "key": "-----BEGIN PRIVATE KEY\nPrivate Key Here...",
+  "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
+}
+```
 
-Hostname mail as data bag search_id:
+The `chain` entry may be optional if the CA's root chain is already trusted by the server.
 
-    knife data bag create certificates mail --secret-file ~/.chef/encrypted_data_bag_secret
-
-The resulting encrypted data bag for a hostname should be structured like so.
-The *chain* id may be optional if your CA's root chain is already trusted by the
-server.
-
-    {
-      "id": "mail",
-      "cert": "-----BEGIN CERTIFICATE-----\nMail Certificate Here...",
-      "key": "-----BEGIN PRIVATE KEY\nMail Private Key Here...",
-      "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
-    }
-
-
-Wildcard certificate as data bag search_id:
-
-    knife data bag create certificates wildcard --secret-file ~/.chef/encrypted_data_bag_secret
-
-The resulting encrypted data bag should be structured like so for a wildcard
-certificate.  The *chain* id may be optional if your CA's root chain is already
-trusted by the server.
-
-    {
-      "id": "wildcard",
-      "cert": "-----BEGIN CERTIFICATE-----\nWildcard Certificate Here...",
-      "key": "-----BEGIN PRIVATE KEY\nWildcard Private Key Here...",
-      "chain": "-----BEGIN CERTIFICATE-----\nCA Root Chain Here..."
-    }
-
-
-Recipes
--------
+## Recipes
 
 This cookbook comes with three simple example recipes for using the *certificate_manage* LWRP.
 
-#### default
+### `certificate::default`
 
-Searches the data bag, *certificates*, for an object with an *id* matching
-*node.hostname*.  Then the recipe places the decrypted certificates and keys
-in either */etc/pki/tls* (RHEL family), or */etc/ssl* (Debian family).  The
-default owner and group owner of the resulting files are *root*.
+Creates certificates from the data bag item `certificates/$HOSTNAME`.
 
-The resulting files will be named {node.fqdn}.pem (cert),
-{node.fqdn}.key (key), and {node.hostname}-bundle.crt (CA Root chain).
+### `certificate::wildcard`
 
-#### wildcard
+Same as the default recipe, except for the data bag item name is `wildcard` instead of the node hostname.
 
-Same as the default recipe, except for the search *id* is *wildcard*.
-The resulting files will be named wildcard.pem (cert), wildcard.key (key),
-and wildcard-bundle.crt (CA Root chain)
+The resulting files will be named wildcard.pem (cert), wildcard.key (key), and wildcard-bundle.crt (CA Root chain)
 
-### manage_by_attributes
+### `certificate::manage_by_attributes`
 
-Retrieve search keys from attributes "certificate".
-Set ID and LWRP attributes to node attribute following...
+Defines `certificate_manage` resources dynamically from node attributes.
 
-    "certificate": [
-      {"self": null},
-      {"mail": {
-        "cert_path": "/etc/postfix/ssl",
-         "owner": "postfix",
-         "group": "postfix"
-        }
-      },
-    ]
+<!-- use raw html table for multi line code blocks -->
+<table>
+<tr>
+<td> Attributes </td> <td> Equivalent resources </td>
+</tr>
+<tr>
+<td>
 
+```ruby
+node['certificate'] = [
+  {
+    'foo' => {
+      data_bag_type: 'none',
+      plaintext_cert: 'plain_cert',
+      plaintext_key: 'plain_key',
+      plaintext_chain: 'plain_chain',
+    }
+  },
+  {'test' => {}},
+]
+```
 
-Resources/Providers
--------------------
+</td>
+<td>
 
-#### resources
+```ruby
+certificate_manage 'foo' do
+  data_bag_type 'none'
+  plaintext_cert 'plain_cert'
+  plaintext_key 'plain_key'
+  plaintext_chain 'plain_chain'
+end
 
-The LWRP resource attributes are as follows.
+certificate_manage 'test'
+```
 
-  * `data_bag` - Data bag index to search, defaults to certificates
-  * `data_bag_secret` - Path to the file with the data bag secret
-  * `data_bag_type` - encrypted, unencrypted, vault, none
-    - vault type data bags are not supported with chef-solo
-    - none type is used to provide values directly to the resource using plaintext_ parameters
-  * `search_id` - Data bag id to search for, defaults to provider name
-  * `plaintext_cert`: for data_bag_type 'none', should be formatted just like a data bag item
-  * `plaintext_key`: for data_bag_type 'none', should be formatted just like a data bag item
-  * `plaintext_chain`: for data_bag_type 'none', should be formatted just like a data bag item
-  * `cert_path` - Top-level SSL directory, defaults to vendor specific location
-  * `cert_file` - The basename of the x509 certificate, defaults to {node.fqdn}.pem
-  * `key_file` - The basename of the private key file, defaults to {node.fqdn}.key
-  * `chain_file` - The basename of the x509 certificate, defaults to {node.hostname}-bundle.crt
-  * `nginx_cert` - If `true`, combines server and CA certificates for nginx. Default `false`
-  * `combined_file` - If `true`, combines server cert, CA cert and private key into a single file. Default `false`
-  * `owner` - The file owner, defaults to root
-  * `group` - The file group owner, defaults to root
-  * `cookbook` - The cookbook containing the erb template, defaults to certificate
-  * `create_subfolders` - Enable/disable auto-creation of private/certs subdirectories.  Defaults to true
+</td>
+</tr>
+</table>
 
-#### providers
+## Resources
 
-  * `certificate_manage` - The reusable LWRP to manage certificates, keys, and CA bundles
+### `certificate_manage`
 
-Usage
------
+Sets up certificates from data bags or Chef Vault stores.
 
-Here is a flushed out example using the LWRP to manage your certificate
-items on a Postfix bridgehead.  The following example should select the
-*mail* data bag object, from the *certificates* data bag.
+| Property            | Default                                     | Description                                                                                                                           |
+|---------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `data_bag`          | `certificate`                               | Name of the data bag to look in                                                                                                       |
+| `data_bag_secret`   | `Chef::Config['encrypted_data_bag_secret']` | Path to the file with the data bag secret                                                                                             |
+| `data_bag_type`     | `encrypted`                                 | Where to get certificate data from: `encrypted` or `unencrypted` data bag, `vault` for Chef Vault, or `none` for plaintext properties |
+| `search_id`         | Resource name                               | Name of the data bag item to use                                                                                                      |
+| `plaintext_cert`    |                                             | Manual cert input for `none` data bag type                                                                                            |
+| `plaintext_key`     |                                             | Manual key input for `none` data bag type                                                                                             |
+| `plaintext_chain`   |                                             | Manual chain input for `none` data bag type                                                                                           |
+| `cert_path`         | `/etc/pki/tls` on RHEL, else `/etc/ssl`     | Directory to place certificates in                                                                                                    |
+| `create_subfolders` | `true`                                      | Whether to use `private/` and `certs/` subdirectories under `cert_path`                                                               |
+| `cert_file`         | `$FQDN.pem`                                 | Basename of the certificate                                                                                                           |
+| `key_file`          | `$FQDN.key`                                 | Basename of the private key                                                                                                           |
+| `chain_file`        | `$HOSTNAME-bundle.pem`                      | Basename of the chain certificate                                                                                                     |
+| `nginx_cert`        | `false`                                     | Whether to create a combined cert/chain certificate for use with Nginx instead of separate certs                                      |
+| `combined_file`     | `false`                                     | Whether to combine the cert, chain, and key into a single file                                                                        |
+| `owner`             | `root`                                      | File owner of the certificates                                                                                                        |
+| `group`             | `root`                                      | File group of the certificates                                                                                                        |
+| `cookbook`          | `certificate`                               | Cookbook containing the certificate file template.                                                                                    |
 
-It should then place the managed certificate files in */etc/postfix/ssl*,
-and change the owner/group to *postfix*.
+### Example
+
+The following example will place certificates defined in the `certificates/mail` data bag item under `/etc/postfix/ssl`
+owned by postfix.
 
 ```ruby
 certificate_manage "mail" do
@@ -195,13 +156,13 @@ certificate_manage "mail" do
 end
 ```
 
-##### .certificate, .key, .chain helper method usage
+### .certificate, .key, .chain helper method usage
 
 Some helper methods are exposed for retrieving key/certificate paths in other recipes:
 
-  * `.certificate` - The final path of the certificate file. i.e. `#{cert_path}/certs/#{cert_file}`
-  * `.key` - The final path of the key file. i.e. `#{cert_path}/private/#{key_file}`
-  * `.chain` - The final path of the chain file. i.e. `#{cert_path}/certs/#{chain_file}`
+- `.certificate` - The final path of the certificate file. i.e. `#{cert_path}/certs/#{cert_file}`
+- `.key` - The final path of the key file. i.e. `#{cert_path}/private/#{key_file}`
+- `.chain` - The final path of the chain file. i.e. `#{cert_path}/certs/#{chain_file}`
 
 ```rb
 # where node.fqdn = 'example.com'
@@ -216,9 +177,11 @@ end
 sbd_cert_location = sbd.key # => /bobs/emporium/sub.example.com.key
 ```
 
-##### Setting FQDN during the converge?
+### Setting FQDN during the converge
 
-If you are updating the FQDN of the node during converge, be sure to use [lazy attribute evaluation](https://docs.chef.io/resource_common.html#lazy-attribute-evaluation) when using the LWRP to ensure ```node['fqdn']``` refers to the updated value.
+If the FQDN of the node is updated during converge, be sure to use [lazy attribute
+evaluation](https://docs.chef.io/resource_common.html#lazy-attribute-evaluation) to ensure `node['fqdn']` refers to the
+updated value.
 
 ```ruby
 certificate_manage "wildcard" do
@@ -228,13 +191,11 @@ certificate_manage "wildcard" do
 end
 ```
 
-##### Using the 'none' data bag type, supplying plain text example:
+### Using the `none` data bag type
 
-The 'none' option doesn't use a data bag at all, but allows you to pass the
-certificate, key, and/or chain as a string directly to the resource. This allows
-you to use the `certificate_manage` resource for all of your certificate needs,
-even if you happen to have the data stored in a different data bag location or
-in some other external storage that isn't supported.
+The `none` option does not use a data bag, requiring the certificate, key, and/or chain to be passed directly to the
+resource. This allows you to use the `certificate_manage` resource for all of your certificate needs, even if the
+certificate data is stored in an unsupported location.
 
 ```ruby
 certificate_manage "fqdn-none-plaintext" do
@@ -248,21 +209,27 @@ certificate_manage "fqdn-none-plaintext" do
 end
 ```
 
-License and Author
-------------------
+## Contributors
 
-Author:: Eric G. Wolfe <eric.wolfe@gmail.com> [![endorse](https://api.coderwall.com/atomic-penguin/endorsecount.png)](https://coderwall.com/atomic-penguin)
+This project exists thanks to all the people who [contribute.](https://opencollective.com/sous-chefs/contributors.svg?width=890&button=false)
 
-Copyright:: 2012, Eric G. Wolfe
+### Backers
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Thank you to all our backers!
 
-    http://www.apache.org/licenses/LICENSE-2.0
+![https://opencollective.com/sous-chefs#backers](https://opencollective.com/sous-chefs/backers.svg?width=600&avatarHeight=40)
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+### Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
+
+![https://opencollective.com/sous-chefs/sponsor/0/website](https://opencollective.com/sous-chefs/sponsor/0/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/1/website](https://opencollective.com/sous-chefs/sponsor/1/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/2/website](https://opencollective.com/sous-chefs/sponsor/2/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/3/website](https://opencollective.com/sous-chefs/sponsor/3/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/4/website](https://opencollective.com/sous-chefs/sponsor/4/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/5/website](https://opencollective.com/sous-chefs/sponsor/5/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/6/website](https://opencollective.com/sous-chefs/sponsor/6/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/7/website](https://opencollective.com/sous-chefs/sponsor/7/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/8/website](https://opencollective.com/sous-chefs/sponsor/8/avatar.svg?avatarHeight=100)
+![https://opencollective.com/sous-chefs/sponsor/9/website](https://opencollective.com/sous-chefs/sponsor/9/avatar.svg?avatarHeight=100)

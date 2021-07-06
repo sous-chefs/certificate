@@ -1,0 +1,6 @@
+---
+name: default
+title: Integration tests for certificate cookbook
+summary: This InSpec profile contains integration tests for the certificate cookbook
+supports:
+  - os-family: linux

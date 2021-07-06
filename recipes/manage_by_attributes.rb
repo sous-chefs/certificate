@@ -1,10 +1,10 @@
 #
-# Cookbook Name:: certificate
+# Cookbook:: certificate
 # Recipe::manage_by_attributes
 #
-# Copyright 2012, Eric G. Wolfe
+# Copyright:: 2012, Eric G. Wolfe
 #
-# Recipe Information
+# Recipe:: Information
 # Author: Yukihiko Sawanoborii (HiganWorks LLC)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +22,9 @@
 node['certificate'].each do |cert|
   cert.each_pair do |id, opts|
     Chef::Log.debug "Create certs #{id} from attribute"
+
     certificate_manage id do
-      action :create
-      opts.each { |k, v| __send__(k, v) if self.respond_to?(k) } unless opts.nil?
+      opts.each { |k, v| __send__(k, v) if respond_to?(k) } unless opts.nil?
     end
   end
 end

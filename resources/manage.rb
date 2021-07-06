@@ -2,7 +2,7 @@
 # Cookbook:: certificate
 # Resources:: manage
 #
-# Copyright 2012, Eric G. Wolfe
+# Copyright:: 2012, Eric G. Wolfe
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,75 +17,192 @@
 # limitations under the License.
 #
 
-def initialize(*args)
-  super
-  @action = :create
-  @sensitive = true
-end
+unified_mode true
 
-actions :create
+default_action :create
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret
 # :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
 # :search_id is the Data Bag object you wish to search.
-attribute :data_bag, :kind_of => String, :default => 'certificates'
-attribute :data_bag_secret, :kind_of => String, :default => Chef::Config['encrypted_data_bag_secret']
-attribute :data_bag_type, :kind_of => String, :equal_to => ['unencrypted', 'encrypted', 'vault', 'none'], :default => 'encrypted'
-attribute :search_id, :kind_of => String, :name_attribute => true
-attribute :ignore_missing, :kind_of => [TrueClass, FalseClass], :default => false
+property :data_bag, String, default: 'certificates'
+property :data_bag_secret, [String, nil], default: Chef::Config['encrypted_data_bag_secret']
+property :data_bag_type, String, equal_to: %w(unencrypted encrypted vault none), default: 'encrypted'
+property :search_id, String, name_property: true
+property :ignore_missing, [true, false], default: false
 
 # When :data_bag_type is none, accept arbitrary plaintext for key, cert, chain
-attribute :plaintext_cert, :kind_of => String, :default => nil
-attribute :plaintext_key, :kind_of => String, :default => nil
-attribute :plaintext_chain, :kind_of => String, :default => nil
+property :plaintext_cert, String
+property :plaintext_key, String
+property :plaintext_chain, String
 
 # :nginx_cert is a PEM which combine host cert and CA trust chain for nginx.
 # :combined_file is a PEM which combine certs and keys in one file, for things such as haproxy.
 # :cert_file is the filename for the managed certificate.
 # :key_file is the filename for the managed key.
 # :chain_file is the filename for the managed CA chain.
-# :cert_path is the top-level directory for certs/keys (certs and private sub-folders are where the files will be placed)
-# :create_subfolders will automatically create certs and private sub-folders
-case node['platform_family']
-when 'rhel', 'fedora'
-  attribute :cert_path, :kind_of => String, :default => '/etc/pki/tls'
-when 'debian'
-  attribute :cert_path, :kind_of => String, :default => '/etc/ssl'
-when 'smartos'
-  attribute :cert_path, :kind_of => String, :default => '/opt/local/etc/openssl'
-else
-  attribute :cert_path, :kind_of => String, :default => '/etc/ssl'
-end
-attribute :nginx_cert, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :combined_file, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :cert_file, :kind_of => String, :default => "#{node['fqdn']}.pem"
-attribute :key_file, :kind_of => String, :default => "#{node['fqdn']}.key"
-attribute :chain_file, :kind_of => String, :default => "#{node['hostname']}-bundle.crt"
-attribute :create_subfolders, :kind_of => [TrueClass, FalseClass], :default => true
+# :default_cert_path is the top-level directory for certs/keys (certs and private sub-folders are where the files will be placed)
+# :new_resource.create_subfolders will automatically create certs and private sub-folders
+property :cert_path, String, default: lazy { default_cert_path }
+property :nginx_cert, [true, false], default: false
+property :combined_file, [true, false], default: false
+property :cert_file, String, default: "#{node['fqdn']}.pem"
+property :key_file, String, default: "#{node['fqdn']}.key"
+property :chain_file, String, default: "#{node['hostname']}-bundle.crt"
+property :create_subfolders, [true, false], default: true
 
 # The owner and group of the managed certificate and key
-attribute :owner, :kind_of => String, :default => 'root'
-attribute :group, :kind_of => String, :default => 'root'
+property :owner, String, default: 'root'
+property :group, String, default: 'root'
 
 # Cookbook to search for blank.erb template
-attribute :cookbook, :kind_of => String, :default => 'certificate'
+property :cookbook, String, default: 'certificate'
 
-# Accesors for determining where files should be placed
-def certificate
-  bits = [cert_path, cert_file]
-  bits.insert(1, 'certs') if create_subfolders
-  ::File.join(bits)
+# sensitive by default
+property :sensitive, [true, false], default: true
+
+action_class do
+  include Certificate::Cookbook::Helpers
+
+  # Accesors for determining where files should be placed
+  def certificate_path
+    bits = [new_resource.cert_path, new_resource.cert_file]
+    bits.insert(1, 'certs') if new_resource.create_subfolders
+    ::File.join(bits)
+  end
+
+  def key_path
+    bits = [new_resource.cert_path, new_resource.key_file]
+    bits.insert(1, 'private') if new_resource.create_subfolders
+    ::File.join(bits)
+  end
+
+  def chain_path
+    bits = [new_resource.cert_path, new_resource.chain_file]
+    bits.insert(1, 'certs') if new_resource.create_subfolders
+    ::File.join(bits)
+  end
 end
 
-def key
-  bits = [cert_path, key_file]
-  bits.insert(1, 'private') if create_subfolders
-  ::File.join(bits)
-end
+action :create do
+  cert_data = case new_resource.data_bag_type
+              when 'encrypted', 'unencrypted'
+                begin
+                  data_bag_item(
+                    new_resource.data_bag,
+                    new_resource.search_id,
+                    (new_resource.data_bag_secret if new_resource.data_bag_type == 'encrypted')
+                  )
+                rescue => e
+                  raise e unless new_resource.ignore_missing
+                  nil
+                end
 
-def chain
-  bits = [cert_path, chain_file]
-  bits.insert(1, 'certs') if create_subfolders
-  ::File.join(bits)
+              when 'vault'
+                # vault doesn't work in chef-solo
+                raise('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
+
+                begin
+                  chef_vault_item(new_resource.data_bag, new_resource.search_id)
+                rescue => e
+                  raise e unless new_resource.ignore_missing
+                  nil
+                end
+
+              when 'none' # just take arbitrary plain text from resource properties
+                {
+                  'cert' => new_resource.plaintext_cert,
+                  'key' => new_resource.plaintext_key,
+                  'chain' => new_resource.plaintext_chain,
+                }
+
+              else
+                raise "Unsupported data bag type #{new_resource.data_bag_type}"
+              end
+
+  next if cert_data.nil?
+
+  if new_resource.create_subfolders
+    directory ::File.join(new_resource.default_cert_path, 'certs') do
+      owner new_resource.owner
+      group new_resource.group
+      mode '755'
+      recursive true
+    end
+
+    directory ::File.join(new_resource.default_cert_path, 'private') do
+      owner new_resource.owner
+      group new_resource.group
+      mode '750'
+      recursive true
+    end
+  end
+
+  if new_resource.combined_file
+    template certificate_path do
+      source 'blank.erb'
+      cookbook new_resource.cookbook
+      owner new_resource.owner
+      group new_resource.group
+      mode '640'
+      variables(
+        file_content: "#{cert_data['cert']}\n#{cert_data['chain']}\n#{cert_data['key']}"
+      )
+      sensitive new_resource.sensitive
+    end
+
+    next
+  end
+
+  if new_resource.nginx_cert
+    # combined cert file for nginx
+    template certificate_path do
+      source 'blank.erb'
+      cookbook new_resource.cookbook
+      owner new_resource.owner
+      group new_resource.group
+      mode '640'
+      variables(
+        file_content: "#{cert_data['cert']}\n#{cert_data['chain']}"
+      )
+      sensitive new_resource.sensitive
+    end
+  else
+    # separate chain and cert files
+    template certificate_path do
+      source 'blank.erb'
+      cookbook new_resource.cookbook
+      owner new_resource.owner
+      group new_resource.group
+      mode '644'
+      variables(
+        file_content: cert_data['cert']
+      )
+      sensitive new_resource.sensitive
+    end
+
+    template chain_path do
+      source 'blank.erb'
+      cookbook new_resource.cookbook
+      owner new_resource.owner
+      group new_resource.group
+      mode '644'
+      variables(
+        file_content: cert_data['chain']
+      )
+      sensitive new_resource.sensitive
+    end
+  end
+
+  template key_path do
+    source 'blank.erb'
+    cookbook new_resource.cookbook
+    owner new_resource.owner
+    group new_resource.group
+    mode '640'
+    variables(
+      file_content: cert_data['key']
+    )
+    sensitive new_resource.sensitive
+  end
 end

@@ -26,7 +26,7 @@ default_action :create
 # :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
 # :search_id is the Data Bag object you wish to search.
 property :data_bag, String, default: 'certificates'
-property :data_bag_secret, [String, nil], default: Chef::Config['encrypted_data_bag_secret']
+property :data_bag_secret, String
 property :data_bag_type, String, equal_to: %w(unencrypted encrypted vault none), default: 'encrypted'
 property :search_id, String, name_property: true
 property :ignore_missing, [true, false], default: false
@@ -91,7 +91,7 @@ action :create do
                   data_bag_item(
                     new_resource.data_bag,
                     new_resource.search_id,
-                    (new_resource.data_bag_secret if new_resource.data_bag_type == 'encrypted')
+                    new_resource.data_bag_secret
                   )
                 rescue => e
                   raise e unless new_resource.ignore_missing

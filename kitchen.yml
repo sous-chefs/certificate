@@ -5,10 +5,12 @@ driver:
 provisioner:
   name: chef_zero
   product_name: chef
+  chef_license: accept-no-persist
   enforce_idempotency: true
   multiple_converge: 2
   deprecations_as_errors: true
   data_bags_path: test/integration/data_bags
+  encrypted_data_bag_secret_key_path: test/integration/encrypted_data_bag_secret
 
 verifier:
   name: inspec
@@ -31,6 +33,17 @@ suites:
       certificate:
         - test:
             data_bag_type: unencrypted
+            cert_file: test.pem
+            key_file: test.key
+            chain_file: test-chain.pem
+  - name: encrypted
+    run_list:
+      - recipe[certificate::manage_by_attributes]
+    attributes:
+      certificate:
+        - test:
+            data_bag_type: encrypted
+            data_bag: certs-encrypted
             cert_file: test.pem
             key_file: test.key
             chain_file: test-chain.pem

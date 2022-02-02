@@ -123,14 +123,14 @@ action :create do
   next if cert_data.nil?
 
   if new_resource.create_subfolders
-    directory ::File.join(new_resource.default_cert_path, 'certs') do
+    directory ::File.join(new_resource.cert_path, 'certs') do
       owner new_resource.owner
       group new_resource.group
       mode '755'
       recursive true
     end
 
-    directory ::File.join(new_resource.default_cert_path, 'private') do
+    directory ::File.join(new_resource.cert_path, 'private') do
       owner new_resource.owner
       group new_resource.group
       mode '750'

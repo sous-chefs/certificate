@@ -4,6 +4,8 @@ This file is used to list changes made in each version of the certificate cookbo
 
 ## Unreleased
 
+Standardise files with files in sous-chefs/repo-management
+
 ## 2.0.3 - *2022-02-02*
 
 - Fix `cert_path` usage when using `create_subfolders`

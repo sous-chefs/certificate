@@ -4,12 +4,11 @@ name: ci
 "on":
   pull_request:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   lint-unit:
-    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@0.0.3
+    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@2.0.1
 
   dokken:
     needs: "lint-unit"
@@ -30,7 +29,6 @@ jobs:
           - none
           - vault
       fail-fast: false
-
     steps:
       - name: Check out code
         uses: actions/checkout@main
@@ -44,10 +42,3 @@ jobs:
         with:
           suite: ${{ matrix.suite }}
           os: ${{ matrix.os }}
-
-  final:
-    needs: [dokken]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@main

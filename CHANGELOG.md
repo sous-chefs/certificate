@@ -6,6 +6,8 @@ This file is used to list changes made in each version of the certificate cookbo
 
 Standardise files with files in sous-chefs/repo-management
 
+Standardise files with files in sous-chefs/repo-management
+
 ## 2.0.11 - *2023-03-15*
 
 Standardise files with files in sous-chefs/repo-management

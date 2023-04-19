@@ -8,7 +8,12 @@ name: ci
 
 jobs:
   lint-unit:
-    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@2.0.1
+    uses: sous-chefs/.github/.github/workflows/lint-unit.yml@2.0.2
+    permissions:
+      actions: write
+      checks: write
+      pull-requests: write
+      statuses: write
 
   dokken:
     needs: "lint-unit"
@@ -29,13 +34,14 @@ jobs:
           - none
           - vault
       fail-fast: false
+
     steps:
       - name: Check out code
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
       - name: Install Chef
         uses: actionshub/chef-install@2.0.4
       - name: Dokken
-        uses: actionshub/kitchen-dokken@main
+        uses: actionshub/test-kitchen@2.1.0
         env:
           CHEF_LICENSE: accept-no-persist
           KITCHEN_LOCAL_YAML: kitchen.dokken.yml

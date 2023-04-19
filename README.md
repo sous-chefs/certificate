@@ -34,7 +34,7 @@ ruby -e 'p ARGF.read' <filename>
 
 This will turn the input file from the normal certificate format:
 
-```
+```text
 -----BEGIN CERTIFICATE-----
 MIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD
 -----END CERTIFICATE-----
@@ -42,7 +42,7 @@ MIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD
 
 Into this:
 
-```
+```text
 -----BEGIN CERTIFICATE-----\nMIIEEDCCA3mgAwIBAgIJAO4rOcmpIFmPMA0GCSqGSIb3DQEBBQUAMIG3MQswCQYD\n-----END CERTIFICATE-----
 ```
 
@@ -78,6 +78,7 @@ The resulting files will be named wildcard.pem (cert), wildcard.key (key), and w
 Defines `certificate_manage` resources dynamically from node attributes.
 
 <!-- use raw html table for multi line code blocks -->
+<!-- markdownlint-disable no-inline-html -->
 <table>
 <tr>
 <td> Attributes </td> <td> Equivalent resources </td>
@@ -116,6 +117,7 @@ certificate_manage 'test'
 </td>
 </tr>
 </table>
+<!-- markdownlint-enable no-inline-html -->
 
 ## Resources
 

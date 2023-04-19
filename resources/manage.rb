@@ -52,8 +52,8 @@ property :chain_file, String, default: "#{node['hostname']}-bundle.crt"
 property :create_subfolders, [true, false], default: true
 
 # The owner and group of the managed certificate and key
-property :owner, String, default: 'root'
-property :group, String, default: 'root'
+property :owner, [String, Integer], default: 'root'
+property :group, [String, Integer], default: 'root'
 
 # Cookbook to search for blank.erb template
 property :cookbook, String, default: 'certificate'

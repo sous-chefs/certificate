@@ -2,6 +2,8 @@
 
 This file is used to list changes made in each version of the certificate cookbook.
 
+## Unreleased
+
 ## 2.0.19 - *2023-09-04*
 
 ## 2.0.18 - *2023-07-10*

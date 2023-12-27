@@ -4,6 +4,8 @@ This file is used to list changes made in each version of the certificate cookbo
 
 ## Unreleased
 
+Standardise files with files in sous-chefs/repo-management
+
 ## 2.0.22 - *2023-12-27*
 
 ## 2.0.21 - *2023-10-31*

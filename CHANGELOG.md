@@ -14,6 +14,8 @@ This file is used to list changes made in each version of the certificate cookbo
 
 ## 2.0.17 - *2023-05-17*
 
+- Allow owner and group to be String or Integer
+
 ## 2.0.16 - *2023-04-19*
 
 - Various CI and Documentation cleanup

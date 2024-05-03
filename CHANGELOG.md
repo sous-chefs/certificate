@@ -6,6 +6,22 @@ This file is used to list changes made in each version of the certificate cookbo
 
 - Allow owner and group to be String or Integer
 
+## 2.0.24 - *2024-05-03*
+
+## 2.0.23 - *2024-05-03*
+
+## 2.0.22 - *2023-12-27*
+
+## 2.0.21 - *2023-10-31*
+
+## 2.0.20 - *2023-09-28*
+
+## 2.0.19 - *2023-09-04*
+
+## 2.0.18 - *2023-07-10*
+
+## 2.0.17 - *2023-05-17*
+
 ## 2.0.16 - *2023-04-19*
 
 - Various CI and Documentation cleanup

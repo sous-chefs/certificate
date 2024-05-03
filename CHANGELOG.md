@@ -4,6 +4,8 @@ This file is used to list changes made in each version of the certificate cookbo
 
 ## Unreleased
 
+- Allow owner and group to be String or Integer
+
 ## 2.0.24 - *2024-05-03*
 
 ## 2.0.23 - *2024-05-03*

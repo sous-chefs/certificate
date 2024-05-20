@@ -6,7 +6,13 @@ This file is used to list changes made in each version of the certificate cookbo
 
 Standardise files with files in sous-chefs/repo-management
 
-Standardise files with files in sous-chefs/repo-management
+## 2.1.0 - *2024-05-03*
+
+- Allow owner and group to be String or Integer
+
+## 2.0.24 - *2024-05-03*
+
+## 2.0.23 - *2024-05-03*
 
 ## 2.0.22 - *2023-12-27*
 

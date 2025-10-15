@@ -2,6 +2,18 @@
 
 This file is used to list changes made in each version of the certificate cookbook.
 
+## [2.1.5](https://github.com/sous-chefs/certificate/compare/certificate-v2.1.4...certificate-v2.1.5) (2025-10-15)
+
+
+### Bug Fixes
+
+* **ci:** Update workflows to use release pipeline ([#113](https://github.com/sous-chefs/certificate/issues/113)) ([f4488e7](https://github.com/sous-chefs/certificate/commit/f4488e7a6dee08a498da9ce459ca046040675794))
+
+
+### Reverts
+
+* 38 ([000802f](https://github.com/sous-chefs/certificate/commit/000802f02a5c52c32cd4cc1b5ee24bf57d21f3ab))
+
 ## 2.1.3 - *2024-11-18*
 
 Standardise files with files in sous-chefs/repo-management

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # suite: none
 # Plaintext party! No data bags required! 🎈✨
 certificate_manage 'test' do

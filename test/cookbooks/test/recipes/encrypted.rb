@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # suite: encrypted
 # Shhh! It's an encrypted secret party! 🔐🎉
 certificate_manage 'test' do

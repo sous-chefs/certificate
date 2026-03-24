@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Cookbook:: certificate
 # Resources:: manage
@@ -190,9 +192,11 @@ action :delete do
 
   file key_path do
     action :delete
+    not_if { new_resource.combined_file }
   end
 
   file chain_path do
     action :delete
-  end unless new_resource.combined_file || new_resource.nginx_cert
+    not_if { new_resource.combined_file || new_resource.nginx_cert }
+  end
 end

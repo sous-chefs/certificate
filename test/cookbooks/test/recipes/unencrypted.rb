@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # suite: unencrypted
 # Let's test unencrypted data bags! 🥳
 certificate_manage 'test' do

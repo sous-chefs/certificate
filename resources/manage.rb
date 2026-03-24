@@ -2,7 +2,7 @@
 # Cookbook:: certificate
 # Resources:: manage
 #
-# Copyright:: 2012, Eric G. Wolfe
+# Copyright:: 2012-2026, Sous Chefs
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,16 +18,18 @@
 #
 
 unified_mode true
-
+provides :certificate_manage
 default_action :create
+
+# --- Properties ---
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret
-# :data_bag_type is the type of data bag (i.e. unenc, enc, vault)
+# :data_bag_type is the type of data bag (i.e. unenc, enc)
 # :search_id is the Data Bag object you wish to search.
 property :data_bag, String, default: 'certificates'
 property :data_bag_secret, String
-property :data_bag_type, String, equal_to: %w(unencrypted encrypted vault none), default: 'encrypted'
+property :data_bag_type, String, equal_to: %w(unencrypted encrypted none), default: 'encrypted'
 property :search_id, String, name_property: true
 property :ignore_missing, [true, false], default: false
 
@@ -41,30 +43,28 @@ property :plaintext_chain, String
 # :cert_file is the filename for the managed certificate.
 # :key_file is the filename for the managed key.
 # :chain_file is the filename for the managed CA chain.
-# :default_cert_path is the top-level directory for certs/keys (certs and private sub-folders are where the files will be placed)
-# :new_resource.create_subfolders will automatically create certs and private sub-folders
+# :cert_path is the top-level directory for certs/keys
+# :create_subfolders will automatically create certs and private sub-folders
 property :cert_path, String, default: lazy { default_cert_path }
 property :nginx_cert, [true, false], default: false
 property :combined_file, [true, false], default: false
-property :cert_file, String, default: "#{node['fqdn']}.pem"
-property :key_file, String, default: "#{node['fqdn']}.key"
-property :chain_file, String, default: "#{node['hostname']}-bundle.crt"
+property :cert_file, String, default: lazy { "#{node['fqdn']}.pem" }
+property :key_file, String, default: lazy { "#{node['fqdn']}.key" }
+property :chain_file, String, default: lazy { "#{node['hostname']}-bundle.crt" }
 property :create_subfolders, [true, false], default: true
 
 # The owner and group of the managed certificate and key
 property :owner, [String, Integer], default: 'root'
 property :group, [String, Integer], default: 'root'
 
-# Cookbook to search for blank.erb template
-property :cookbook, String, default: 'certificate'
-
 # sensitive by default
 property :sensitive, [true, false], default: true
+
+# --- Action Class ---
 
 action_class do
   include Certificate::Cookbook::Helpers
 
-  # Accesors for determining where files should be placed
   def certificate_path
     bits = [new_resource.cert_path, new_resource.cert_file]
     bits.insert(1, 'certs') if new_resource.create_subfolders
@@ -84,6 +84,8 @@ action_class do
   end
 end
 
+# --- Actions ---
+
 action :create do
   cert_data = case new_resource.data_bag_type
               when 'encrypted', 'unencrypted'
@@ -93,17 +95,6 @@ action :create do
                     new_resource.search_id,
                     new_resource.data_bag_secret
                   )
-                rescue => e
-                  raise e unless new_resource.ignore_missing
-                  nil
-                end
-
-              when 'vault'
-                # vault doesn't work in chef-solo
-                raise('Vault type encryption not supported with chef-solo') if Chef::Config['solo']
-
-                begin
-                  chef_vault_item(new_resource.data_bag, new_resource.search_id)
                 rescue => e
                   raise e unless new_resource.ignore_missing
                   nil
@@ -120,89 +111,88 @@ action :create do
                 raise "Unsupported data bag type #{new_resource.data_bag_type}"
               end
 
-  next if cert_data.nil?
+  if cert_data.nil?
+    Chef::Log.warn("No certificate data found for #{new_resource.search_id}!")
+    next
+  end
 
   if new_resource.create_subfolders
     directory ::File.join(new_resource.cert_path, 'certs') do
       owner new_resource.owner
       group new_resource.group
-      mode '755'
+      mode '0755'
       recursive true
     end
 
     directory ::File.join(new_resource.cert_path, 'private') do
       owner new_resource.owner
       group new_resource.group
-      mode '750'
+      mode '0750'
       recursive true
     end
   end
 
+  # Special handling for combined files (e.g. HAProxy)
   if new_resource.combined_file
-    template certificate_path do
-      source 'blank.erb'
-      cookbook new_resource.cookbook
+    file certificate_path do
+      content "#{cert_data['cert']}\n#{cert_data['chain']}\n#{cert_data['key']}"
       owner new_resource.owner
       group new_resource.group
-      mode '640'
-      variables(
-        file_content: "#{cert_data['cert']}\n#{cert_data['chain']}\n#{cert_data['key']}"
-      )
+      mode '0640'
       sensitive new_resource.sensitive
     end
 
     next
   end
 
+  # Combined cert file for nginx
   if new_resource.nginx_cert
-    # combined cert file for nginx
-    template certificate_path do
-      source 'blank.erb'
-      cookbook new_resource.cookbook
+    file certificate_path do
+      content "#{cert_data['cert']}\n#{cert_data['chain']}"
       owner new_resource.owner
       group new_resource.group
-      mode '640'
-      variables(
-        file_content: "#{cert_data['cert']}\n#{cert_data['chain']}"
-      )
+      mode '0640'
       sensitive new_resource.sensitive
     end
   else
-    # separate chain and cert files
-    template certificate_path do
-      source 'blank.erb'
-      cookbook new_resource.cookbook
+    # Separate chain and cert files
+    file certificate_path do
+      content cert_data['cert']
       owner new_resource.owner
       group new_resource.group
-      mode '644'
-      variables(
-        file_content: cert_data['cert']
-      )
+      mode '0644'
       sensitive new_resource.sensitive
     end
 
-    template chain_path do
-      source 'blank.erb'
-      cookbook new_resource.cookbook
+    file chain_path do
+      content cert_data['chain']
       owner new_resource.owner
       group new_resource.group
-      mode '644'
-      variables(
-        file_content: cert_data['chain']
-      )
+      mode '0644'
       sensitive new_resource.sensitive
     end
   end
 
-  template key_path do
-    source 'blank.erb'
-    cookbook new_resource.cookbook
+  # Private key
+  file key_path do
+    content cert_data['key']
     owner new_resource.owner
     group new_resource.group
-    mode '640'
-    variables(
-      file_content: cert_data['key']
-    )
+    mode '0640'
     sensitive new_resource.sensitive
   end
+end
+
+action :delete do
+  file certificate_path do
+    action :delete
+  end
+
+  file key_path do
+    action :delete
+  end
+
+  file chain_path do
+    action :delete
+  end unless new_resource.combined_file || new_resource.nginx_cert
 end

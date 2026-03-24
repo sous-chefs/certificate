@@ -28,26 +28,20 @@ describe 'certificate_manage' do
       it { is_expected.to create_directory('/etc/pki/tls/private') }
 
       it do
-        is_expected.to create_template('/etc/pki/tls/certs/fauxhai.local.pem').with(
-          variables: {
-            file_content: 'the_cert',
-          }
+        is_expected.to create_file('/etc/pki/tls/certs/fauxhai.local.pem').with(
+          content: 'the_cert'
         )
       end
 
       it do
-        is_expected.to create_template('/etc/pki/tls/private/fauxhai.local.key').with(
-          variables: {
-            file_content: 'the_key',
-          }
+        is_expected.to create_file('/etc/pki/tls/private/fauxhai.local.key').with(
+          content: 'the_key'
         )
       end
 
       it do
-        is_expected.to create_template('/etc/pki/tls/certs/Fauxhai-bundle.crt').with(
-          variables: {
-            file_content: 'the_chain',
-          }
+        is_expected.to create_file('/etc/pki/tls/certs/Fauxhai-bundle.crt').with(
+          content: 'the_chain'
         )
       end
     end
@@ -60,26 +54,20 @@ describe 'certificate_manage' do
       it { is_expected.to create_directory('/etc/ssl/private') }
 
       it do
-        is_expected.to create_template('/etc/ssl/certs/fauxhai.local.pem').with(
-          variables: {
-            file_content: 'the_cert',
-          }
+        is_expected.to create_file('/etc/ssl/certs/fauxhai.local.pem').with(
+          content: 'the_cert'
         )
       end
 
       it do
-        is_expected.to create_template('/etc/ssl/private/fauxhai.local.key').with(
-          variables: {
-            file_content: 'the_key',
-          }
+        is_expected.to create_file('/etc/ssl/private/fauxhai.local.key').with(
+          content: 'the_key'
         )
       end
 
       it do
-        is_expected.to create_template('/etc/ssl/certs/Fauxhai-bundle.crt').with(
-          variables: {
-            file_content: 'the_chain',
-          }
+        is_expected.to create_file('/etc/ssl/certs/Fauxhai-bundle.crt').with(
+          content: 'the_chain'
         )
       end
     end
@@ -99,26 +87,20 @@ describe 'certificate_manage' do
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/certs/fauxhai.local.pem').with(
-        variables: {
-          file_content: 'plain_cert',
-        }
+      is_expected.to create_file('/etc/pki/tls/certs/fauxhai.local.pem').with(
+        content: 'plain_cert'
       )
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/private/fauxhai.local.key').with(
-        variables: {
-          file_content: 'plain_key',
-        }
+      is_expected.to create_file('/etc/pki/tls/private/fauxhai.local.key').with(
+        content: 'plain_key'
       )
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/certs/Fauxhai-bundle.crt').with(
-        variables: {
-          file_content: 'plain_chain',
-        }
+      is_expected.to create_file('/etc/pki/tls/certs/Fauxhai-bundle.crt').with(
+        content: 'plain_chain'
       )
     end
   end
@@ -136,9 +118,9 @@ describe 'certificate_manage' do
     it { is_expected.to_not create_directory('/etc/pki/tls/certs') }
     it { is_expected.to_not create_directory('/etc/pki/tls/private') }
 
-    it { is_expected.to create_template('/etc/pki/tls/fauxhai.local.pem') }
-    it { is_expected.to create_template('/etc/pki/tls/fauxhai.local.key') }
-    it { is_expected.to create_template('/etc/pki/tls/Fauxhai-bundle.crt') }
+    it { is_expected.to create_file('/etc/pki/tls/fauxhai.local.pem') }
+    it { is_expected.to create_file('/etc/pki/tls/fauxhai.local.key') }
+    it { is_expected.to create_file('/etc/pki/tls/Fauxhai-bundle.crt') }
   end
 
   context 'with combined file' do
@@ -152,15 +134,13 @@ describe 'certificate_manage' do
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/certs/fauxhai.local.pem').with(
-        variables: {
-          file_content: "the_cert\nthe_chain\nthe_key",
-        }
+      is_expected.to create_file('/etc/pki/tls/certs/fauxhai.local.pem').with(
+        content: "the_cert\nthe_chain\nthe_key"
       )
     end
 
-    it { is_expected.to_not create_template('/etc/pki/tls/private/fauxhai.local.key') }
-    it { is_expected.to_not create_template('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
+    it { is_expected.to_not create_file('/etc/pki/tls/private/fauxhai.local.key') }
+    it { is_expected.to_not create_file('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
   end
 
   context 'with nginx cert' do
@@ -174,21 +154,32 @@ describe 'certificate_manage' do
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/certs/fauxhai.local.pem').with(
-        variables: {
-          file_content: "the_cert\nthe_chain",
-        }
+      is_expected.to create_file('/etc/pki/tls/certs/fauxhai.local.pem').with(
+        content: "the_cert\nthe_chain"
       )
     end
 
     it do
-      is_expected.to create_template('/etc/pki/tls/private/fauxhai.local.key').with(
-        variables: {
-          file_content: 'the_key',
-        }
+      is_expected.to create_file('/etc/pki/tls/private/fauxhai.local.key').with(
+        content: 'the_key'
       )
     end
 
-    it { is_expected.to_not create_template('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
+    it { is_expected.to_not create_file('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
+  end
+
+  context 'with action :delete' do
+    cached(:subject) { chef_run }
+    platform 'centos'
+
+    recipe do
+      certificate_manage 'test' do
+        action :delete
+      end
+    end
+
+    it { is_expected.to delete_file('/etc/pki/tls/certs/fauxhai.local.pem') }
+    it { is_expected.to delete_file('/etc/pki/tls/private/fauxhai.local.key') }
+    it { is_expected.to delete_file('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
   end
 end

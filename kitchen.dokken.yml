@@ -12,37 +12,37 @@ provisioner:
 platforms:
   - name: almalinux-8
     driver:
-      image: almalinux:8
+      image: dokken/almalinux-8
       pid_one_command: /usr/lib/systemd/systemd
   - name: almalinux-9
     driver:
-      image: almalinux:9
+      image: dokken/almalinux-9
       pid_one_command: /usr/lib/systemd/systemd
   - name: amazonlinux-2023
     driver:
-      image: amazonlinux:2023
+      image: dokken/amazonlinux-2023
       pid_one_command: /usr/lib/systemd/systemd
   - name: centos-stream-9
     driver:
-      image: quay.io/centos/centos:stream9
+      image: dokken/centos-stream-9
       pid_one_command: /usr/lib/systemd/systemd
   - name: debian-12
     driver:
-      image: debian:12
+      image: dokken/debian-12
       pid_one_command: /lib/systemd/systemd
   - name: rockylinux-8
     driver:
-      image: rockylinux:8
+      image: dokken/rockylinux-8
       pid_one_command: /usr/lib/systemd/systemd
   - name: rockylinux-9
     driver:
-      image: rockylinux:9
+      image: dokken/rockylinux-9
       pid_one_command: /usr/lib/systemd/systemd
   - name: ubuntu-22.04
     driver:
-      image: ubuntu:22.04
+      image: dokken/ubuntu-22.04
       pid_one_command: /lib/systemd/systemd
   - name: ubuntu-24.04
     driver:
-      image: ubuntu:24.04
+      image: dokken/ubuntu-24.04
       pid_one_command: /lib/systemd/systemd

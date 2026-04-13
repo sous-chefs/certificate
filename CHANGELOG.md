@@ -2,6 +2,29 @@
 
 This file is used to list changes made in each version of the certificate cookbook.
 
+## [3.0.0](https://github.com/sous-chefs/certificate/compare/certificate-v2.1.5...certificate-v3.0.0) (2026-04-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removed recipe-based interface (default, manage_by_attributes, wildcard).
+
+### Features
+
+* **ci:** migrate to reusable workflows v4.1.0 ([#112](https://github.com/sous-chefs/certificate/issues/112)) ([ee8de29](https://github.com/sous-chefs/certificate/commit/ee8de29bd87bd3036628527a3843341e771fba0a))
+* full migration to custom resource pattern ([#123](https://github.com/sous-chefs/certificate/issues/123)) ([3f2ba37](https://github.com/sous-chefs/certificate/commit/3f2ba37c774c8b5d70dcf9911615025bd6bbe6d5))
+* major version bump for custom resource migration ([4fdf5d6](https://github.com/sous-chefs/certificate/commit/4fdf5d6d417505ffc2e29bfa7858ea0cd6155de7))
+
+
+### Bug Fixes
+
+* **ci:** Update workflows to use release pipeline ([#113](https://github.com/sous-chefs/certificate/issues/113)) ([f4488e7](https://github.com/sous-chefs/certificate/commit/f4488e7a6dee08a498da9ce459ca046040675794))
+
+
+### Reverts
+
+* 38 ([000802f](https://github.com/sous-chefs/certificate/commit/000802f02a5c52c32cd4cc1b5ee24bf57d21f3ab))
+
 ## [2.1.5](https://github.com/sous-chefs/certificate/compare/certificate-v2.1.4...certificate-v2.1.5) (2025-10-15)
 
 

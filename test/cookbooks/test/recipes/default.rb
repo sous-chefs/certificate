@@ -2,6 +2,9 @@
 
 # suite: default
 # Default party! 🎉
-certificate_manage node['hostname'] do
+certificate_manage 'test' do
+  cert_file 'test.pem'
+  key_file 'test.key'
+  chain_file 'test-chain.pem'
   ignore_missing true
 end

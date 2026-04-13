@@ -3,7 +3,7 @@ require_relative '../../spec_helper'
 describe 'certificate_manage' do
   step_into :certificate_manage
 
-  platform 'centos'
+  platform 'almalinux'
 
   before do
     stub_data_bag_item('certificates', 'test').and_return(
@@ -20,9 +20,9 @@ describe 'certificate_manage' do
       certificate_manage 'test'
     end
 
-    context 'on centos' do
+    context 'on almalinux' do
       cached(:subject) { chef_run }
-      platform 'centos'
+      platform 'almalinux'
 
       it { is_expected.to create_directory('/etc/pki/tls/certs') }
       it { is_expected.to create_directory('/etc/pki/tls/private') }
@@ -75,7 +75,7 @@ describe 'certificate_manage' do
 
   context 'with plaintext' do
     cached(:subject) { chef_run }
-    platform 'centos'
+    platform 'almalinux'
 
     recipe do
       certificate_manage 'plain' do
@@ -107,7 +107,7 @@ describe 'certificate_manage' do
 
   context 'when not creating subdirs' do
     cached(:subject) { chef_run }
-    platform 'centos'
+    platform 'almalinux'
 
     recipe do
       certificate_manage 'test' do
@@ -125,7 +125,7 @@ describe 'certificate_manage' do
 
   context 'with combined file' do
     cached(:subject) { chef_run }
-    platform 'centos'
+    platform 'almalinux'
 
     recipe do
       certificate_manage 'test' do
@@ -145,7 +145,7 @@ describe 'certificate_manage' do
 
   context 'with nginx cert' do
     cached(:subject) { chef_run }
-    platform 'centos'
+    platform 'almalinux'
 
     recipe do
       certificate_manage 'test' do
@@ -168,9 +168,52 @@ describe 'certificate_manage' do
     it { is_expected.to_not create_file('/etc/pki/tls/certs/Fauxhai-bundle.crt') }
   end
 
+  context 'with chef-vault data bag type' do
+    cached(:subject) { chef_run }
+    platform 'almalinux'
+
+    before do
+      allow_any_instance_of(Chef::Provider).to receive(:chef_vault_item).with('vault-certs', 'test').and_return(
+        {
+          'chain' => 'vault_chain',
+          'cert' => 'vault_cert',
+          'key' => 'vault_key',
+        }
+      )
+    end
+
+    recipe do
+      certificate_manage 'test' do
+        data_bag_type 'chef-vault'
+        data_bag 'vault-certs'
+        cert_file 'test.pem'
+        key_file 'test.key'
+        chain_file 'test-chain.pem'
+      end
+    end
+
+    it do
+      is_expected.to create_file('/etc/pki/tls/certs/test.pem').with(
+        content: 'vault_cert'
+      )
+    end
+
+    it do
+      is_expected.to create_file('/etc/pki/tls/private/test.key').with(
+        content: 'vault_key'
+      )
+    end
+
+    it do
+      is_expected.to create_file('/etc/pki/tls/certs/test-chain.pem').with(
+        content: 'vault_chain'
+      )
+    end
+  end
+
   context 'with action :delete' do
     cached(:subject) { chef_run }
-    platform 'centos'
+    platform 'almalinux'
 
     recipe do
       certificate_manage 'test' do

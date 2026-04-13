@@ -4,7 +4,7 @@ module Certificate
   module Cookbook
     module Helpers
       def default_cert_path
-        if platform_family?('rhel', 'fedora')
+        if platform_family?('rhel', 'fedora', 'amazon')
           '/etc/pki/tls'
         else
           '/etc/ssl'

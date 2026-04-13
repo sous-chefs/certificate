@@ -1,24 +1,5 @@
 # frozen_string_literal: true
 
-#
-# Cookbook:: certificate
-# Resources:: manage
-#
-# Copyright:: 2012-2026, Sous Chefs
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 unified_mode true
 provides :certificate_manage
 default_action :create
@@ -27,11 +8,11 @@ default_action :create
 
 # :data_bag is the Data Bag to search.
 # :data_bag_secret is the path to the file with the data bag secret
-# :data_bag_type is the type of data bag (i.e. unenc, enc)
+# :data_bag_type is the type of data bag (i.e. unenc, enc, chef-vault)
 # :search_id is the Data Bag object you wish to search.
 property :data_bag, String, default: 'certificates'
 property :data_bag_secret, String
-property :data_bag_type, String, equal_to: %w(unencrypted encrypted none), default: 'encrypted'
+property :data_bag_type, String, equal_to: %w(unencrypted encrypted chef-vault none), default: 'encrypted'
 property :search_id, String, name_property: true
 property :ignore_missing, [true, false], default: false
 
@@ -97,6 +78,14 @@ action :create do
                     new_resource.search_id,
                     new_resource.data_bag_secret
                   )
+                rescue => e
+                  raise e unless new_resource.ignore_missing
+                  nil
+                end
+
+              when 'chef-vault'
+                begin
+                  chef_vault_item(new_resource.data_bag, new_resource.search_id)
                 rescue => e
                   raise e unless new_resource.ignore_missing
                   nil

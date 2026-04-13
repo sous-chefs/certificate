@@ -9,14 +9,21 @@ describe Certificate::Cookbook::Helpers do
   describe '#default_cert_path' do
     context 'on redhat' do
       it 'returns /etc/pki/tls' do
-        allow(subject).to receive(:platform_family?).with('rhel', 'fedora').and_return(true)
+        allow(subject).to receive(:platform_family?).with('rhel', 'fedora', 'amazon').and_return(true)
+        expect(subject.default_cert_path).to eq('/etc/pki/tls')
+      end
+    end
+
+    context 'on amazon' do
+      it 'returns /etc/pki/tls' do
+        allow(subject).to receive(:platform_family?).with('rhel', 'fedora', 'amazon').and_return(true)
         expect(subject.default_cert_path).to eq('/etc/pki/tls')
       end
     end
 
     context 'on ubuntu' do
       it 'returns /etc/ssl' do
-        allow(subject).to receive(:platform_family?).with('rhel', 'fedora').and_return(false)
+        allow(subject).to receive(:platform_family?).with('rhel', 'fedora', 'amazon').and_return(false)
         expect(subject.default_cert_path).to eq('/etc/ssl')
       end
     end

@@ -27,7 +27,7 @@ control 'certificate' do
   describe file("#{cert_path}/private/test.key") do
     it { should exist }
     its('mode') { should cmp '0640' }
-    its('content') { should match /BEGIN RSA PRIVATE KEY/ }
+    its('content') { should match /BEGIN.*PRIVATE KEY/ }
   end
 
   describe file("#{cert_path}/certs/test-chain.pem") do

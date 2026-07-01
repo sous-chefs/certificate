@@ -1,4 +1,15 @@
-# Product Limitations: Certificate Management
+# AGENTS.md
+
+## Cookbook Purpose
+
+Installs and configures certificates, private keys, CA root bundles from encrypted data bags.
+
+## Agent Findings
+
+* This cookbook is in an incremental modernization pass. Preserve existing public recipes and attributes unless a later full migration is explicitly selected.
+* Dependency management should use `Policyfile.rb`; do not reintroduce Berkshelf.
+
+## Known Limitations
 
 This cookbook manages X.509 certificates, private keys, and CA bundles by writing
 files into the platform's standard TLS directories. It does not install or manage
@@ -21,10 +32,10 @@ those path conventions rather than package availability.
 
 ## Unsupported or Unverified Platforms
 
-- FreeBSD remains unverified in the current Kitchen matrix and is not declared in `metadata.rb`.
-- Fedora, openSUSE, SUSE, Arch, Scientific Linux, and generic Red Hat claims were removed because this cookbook no longer tests them in CI.
-- CentOS Linux 8 is end-of-life and should not be reintroduced; CentOS Stream 9 is the tested CentOS-family target.
+* FreeBSD remains unverified in the current Kitchen matrix and is not declared in `metadata.rb`.
+* Fedora, openSUSE, SUSE, Arch, Scientific Linux, and generic Red Hat claims were removed because this cookbook no longer tests them in CI.
+* CentOS Linux 8 is end-of-life and should not be reintroduced; CentOS Stream 9 is the tested CentOS-family target.
 
 ## Installation Requirements
 
-- `Chef Infra Client >= 15.3` is required for `unified_mode`.
+* `Chef Infra Client >= 15.3` is required for `unified_mode`.

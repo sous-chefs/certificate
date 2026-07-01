@@ -1,4 +1,15 @@
-# Product Limitations: Certificate Management
+# AGENTS.md
+
+## Cookbook Purpose
+
+Installs and configures certificates, private keys, CA root bundles from encrypted data bags.
+
+## Agent Findings
+
+* This cookbook is in an incremental modernization pass. Preserve existing public recipes and attributes unless a later full migration is explicitly selected.
+* Dependency management should use `Policyfile.rb`; do not reintroduce Berkshelf.
+
+## Known Limitations
 
 This cookbook manages X.509 certificates, private keys, and CA bundles by writing
 files into the platform's standard TLS directories. It does not install or manage

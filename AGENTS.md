@@ -32,10 +32,10 @@ those path conventions rather than package availability.
 
 ## Unsupported or Unverified Platforms
 
-- FreeBSD remains unverified in the current Kitchen matrix and is not declared in `metadata.rb`.
-- Fedora, openSUSE, SUSE, Arch, Scientific Linux, and generic Red Hat claims were removed because this cookbook no longer tests them in CI.
-- CentOS Linux 8 is end-of-life and should not be reintroduced; CentOS Stream 9 is the tested CentOS-family target.
+* FreeBSD remains unverified in the current Kitchen matrix and is not declared in `metadata.rb`.
+* Fedora, openSUSE, SUSE, Arch, Scientific Linux, and generic Red Hat claims were removed because this cookbook no longer tests them in CI.
+* CentOS Linux 8 is end-of-life and should not be reintroduced; CentOS Stream 9 is the tested CentOS-family target.
 
 ## Installation Requirements
 
-- `Chef Infra Client >= 15.3` is required for `unified_mode`.
+* `Chef Infra Client >= 15.3` is required for `unified_mode`.

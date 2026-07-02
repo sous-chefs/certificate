@@ -18,12 +18,12 @@
 - `libraries/` - Library helpers to assist with the cookbook. May contain multiple files depending on complexity of the cookbook.
 - `templates/` - ERB templates that may be used in the cookbook
 - `files/` - files that may be used in the cookbook
-- `metadata.rb`, `Berksfile` - Cookbook metadata and dependencies
+- `metadata.rb`, `Policyfile.rb` - Cookbook metadata and dependency resolution
 
 ## Build and Test System
 
 ### Environment Setup
-**MANDATORY:** Install Chef Workstation first - provides chef, berks, cookstyle, kitchen tools.
+**MANDATORY:** Install Chef Workstation first - provides chef, cookstyle, kitchen, and Policyfile tooling.
 
 ### Essential Commands (strict order)
 ```bash

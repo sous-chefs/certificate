@@ -3,12 +3,13 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_infra
+  name: policyfile_zero
   product_name: <%= ENV['CHEF_PRODUCT_NAME'] || 'chef' %>
   chef_license: accept-no-persist
   enforce_idempotency: true
   multiple_converge: 2
   deprecations_as_errors: true
+  policyfile: Policyfile.rb
   data_bags_path: test/integration/data_bags
   encrypted_data_bag_secret_key_path: test/integration/encrypted_data_bag_secret
 
@@ -33,24 +34,32 @@ suites:
   - name: default
     run_list:
       - recipe[test::default]
+    provisioner:
+      named_run_list: default
     verifier:
       inspec_tests:
         - test/integration/default
   - name: unencrypted
     run_list:
       - recipe[test::unencrypted]
+    provisioner:
+      named_run_list: unencrypted
     verifier:
       inspec_tests:
         - test/integration/default
   - name: encrypted
     run_list:
       - recipe[test::encrypted]
+    provisioner:
+      named_run_list: encrypted
     verifier:
       inspec_tests:
         - test/integration/default
   - name: none
     run_list:
       - recipe[test::none]
+    provisioner:
+      named_run_list: none
     verifier:
       inspec_tests:
         - test/integration/default

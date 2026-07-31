@@ -6,7 +6,7 @@ maintainer_email 'help@sous-chefs.org'
 chef_version     '>= 16'
 license          'Apache-2.0'
 description      'Installs and configures certificates, private keys, CA root bundles from encrypted data bags.'
-version          '2.1.4'
+version          '3.0.0'
 
 supports 'almalinux', '>= 8.0'
 supports 'amazon', '>= 2023.0'
